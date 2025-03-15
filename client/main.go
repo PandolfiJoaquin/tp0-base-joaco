@@ -45,6 +45,7 @@ func InitConfig() (*viper.Viper, error) {
 	v.SetConfigFile("./config.yaml")
 	if err := v.ReadInConfig(); err != nil {
 		fmt.Printf("Configuration could not be read from config file. Using env variables instead")
+		os.Exit(7)
 	}
 
 	// Parse time.Duration variables and return an error if those variables cannot be parsed
