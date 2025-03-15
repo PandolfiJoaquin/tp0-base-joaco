@@ -1,5 +1,4 @@
 #build image for script
 docker build -f ./validador-server/Dockerfile -t "validator:latest" ./validador-server
-
 #run container and run script on it
-docker run --name server-validator2 --network tp0_testing_net validator:latest
+docker run --network tp0_testing_net validator:latest
