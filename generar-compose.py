@@ -16,6 +16,10 @@ SERVER_SERVICE='''
       - LOGGING_LEVEL=DEBUG
     networks:
       - testing_net
+    volumes:
+      - type: bind
+        source: ./server/config.ini
+        target: /config.ini
 '''
 
 CLIENT_SERVICE='''
@@ -26,6 +30,10 @@ CLIENT_SERVICE='''
     environment:
       - CLI_ID=<client-number>
       - CLI_LOG_LEVEL=DEBUG
+    volumes:
+      - type: bind
+        source: ./client/config.yaml
+        target: /config.yaml
     networks:
       - testing_net
     depends_on:
