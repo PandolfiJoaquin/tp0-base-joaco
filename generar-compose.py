@@ -13,7 +13,6 @@ SERVER_SERVICE='''
     entrypoint: python3 /main.py
     environment:
       - PYTHONUNBUFFERED=1
-      - LOGGING_LEVEL=DEBUG
     networks:
       - testing_net
     volumes:
@@ -29,7 +28,6 @@ CLIENT_SERVICE='''
     entrypoint: /client
     environment:
       - CLI_ID=<client-number>
-      - CLI_LOG_LEVEL=DEBUG
     volumes:
       - type: bind
         source: ./client/config.yaml
