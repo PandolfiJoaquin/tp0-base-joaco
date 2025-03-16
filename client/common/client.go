@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"os"
+	"syscall"
 	"time"
 
 	"github.com/op/go-logging"
@@ -56,34 +58,73 @@ func (c *Client) StartClientLoop() {
 	// Messages if the message amount threshold has not been surpassed
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
 		// Create the connection the server in every loop iteration. Send an
-		c.createClientSocket()
 
-		// TODO: Modify the send to avoid short-write
-		fmt.Fprintf(
-			c.conn,
-			"[CLIENT %v] Message N°%v\n",
-			c.config.ID,
-			msgID,
-		)
-		msg, err := bufio.NewReader(c.conn).ReadString('\n')
-		c.conn.Close()
-
-		if err != nil {
-			log.Errorf("action: receive_message | result: fail | client_id: %v | error: %v",
+		msgCh := make(chan string)
+		errCh := make(chan error)
+		sigChan := make(chan os.Signal, 1)
+		go c.sendAndReadResponse(msgID, msgCh, errCh)
+		select {
+		case msg := <-msgCh:
+			log.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
 				c.config.ID,
-				err,
+				msg,
 			)
-			return
-		}
+			break
+		case err := <-errCh:
+			log.Infof("error received")
+			if err != nil {
+				log.Errorf("action: receive_message | result: fail | client_id: %v | error: %v",
+					c.config.ID,
+					err,
+				)
+			}
+			break
+		case sig := <-sigChan:
+			log.Debugf("action: receive_message | client_id: %v | signal received: %v", c.config.ID, sig)
+			if sig == syscall.SIGTERM {
+				log.Infof("action: receive_message | result: interrupted | client_id: %v | error: %v",
+					c.config.ID,
+					sig,
+				)
 
-		log.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
-			c.config.ID,
-			msg,
-		)
+				return
+			}
+		}
+		log.Infof("after select")
 
 		// Wait a time between sending one message and the next one
+		log.Debugf("action: sleep | client_id: %v | time to sleep: %v", c.config.ID, c.config.LoopPeriod)
+
 		time.Sleep(c.config.LoopPeriod)
 
 	}
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
+}
+
+func (c *Client) sendAndReadResponse(msgID int, msgCh chan<- string, errCh chan<- error) {
+	if err := c.createClientSocket(); err != nil {
+		errCh <- err
+		return
+	}
+
+	// TODO: Modify the send to avoid short-write
+	if _, err := fmt.Fprintf(
+		c.conn,
+		"[CLIENT %v] Message N°%v\n",
+		c.config.ID,
+		msgID,
+	); err != nil {
+		errCh <- err
+		return
+	}
+
+	msg, err := bufio.NewReader(c.conn).ReadString('\n')
+	if err != nil {
+		errCh <- err
+		return
+	}
+	msgCh <- msg
+
+	c.conn.Close()
+	return
 }
