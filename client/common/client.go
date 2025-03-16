@@ -81,7 +81,7 @@ func (c *Client) StartClientLoop() {
 		case sig := <-sigChan:
 			log.Debugf("action: receive_message | client_id: %v | signal received: %v", c.config.ID, sig)
 			if sig == syscall.SIGTERM {
-				log.Infof("action: receive_message | result: interrupted | client_id: %v | error: %v",
+				log.Infof("action: receive_message | result: failure | client_id: %v | signal: %v",
 					c.config.ID,
 					sig,
 				)
