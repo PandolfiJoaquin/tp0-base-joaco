@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
 	"syscall"
 	"time"
 
@@ -59,16 +60,14 @@ func (c *Client) StartClientLoop() {
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
 		// Create the connection the server in every loop iteration. Send an
 
-		msgCh := make(chan string)
+		msgDoneCh := make(chan bool)
 		errCh := make(chan error)
 		sigChan := make(chan os.Signal, 1)
-		go c.sendAndReadResponse(msgID, msgCh, errCh)
+		signal.Notify(sigChan, syscall.SIGTERM)
+
+		go c.sendAndReadResponse(msgID, msgDoneCh, errCh)
 		select {
-		case msg := <-msgCh:
-			log.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
-				c.config.ID,
-				msg,
-			)
+		case <-msgDoneCh:
 			break
 		case err := <-errCh:
 			log.Infof("error received")
@@ -86,20 +85,17 @@ func (c *Client) StartClientLoop() {
 					c.config.ID,
 					sig,
 				)
-
 				return
 			}
 		}
-		// Wait a time between sending one message and the next one
-		log.Debugf("action: sleep | client_id: %v | time to sleep: %v", c.config.ID, c.config.LoopPeriod)
 
-		time.Sleep(c.config.LoopPeriod)
+		// Wait a time between sending one message and the next one
 
 	}
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
 }
 
-func (c *Client) sendAndReadResponse(msgID int, msgCh chan<- string, errCh chan<- error) {
+func (c *Client) sendAndReadResponse(msgID int, msgDoneCh chan<- bool, errCh chan<- error) {
 	if err := c.createClientSocket(); err != nil {
 		errCh <- err
 		return
@@ -121,8 +117,18 @@ func (c *Client) sendAndReadResponse(msgID int, msgCh chan<- string, errCh chan<
 		errCh <- err
 		return
 	}
-	msgCh <- msg
+	log.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
+		c.config.ID,
+		msg,
+	)
+	time.Sleep(c.config.LoopPeriod)
+	msgDoneCh <- true
+	if err := c.conn.Close(); err != nil {
+		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
+			c.config.ID,
+			err,
+		)
+	}
 
-	c.conn.Close()
 	return
 }
