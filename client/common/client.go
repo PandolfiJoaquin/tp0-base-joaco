@@ -90,8 +90,6 @@ func (c *Client) StartClientLoop() {
 				return
 			}
 		}
-		log.Infof("after select")
-
 		// Wait a time between sending one message and the next one
 		log.Debugf("action: sleep | client_id: %v | time to sleep: %v", c.config.ID, c.config.LoopPeriod)
 
