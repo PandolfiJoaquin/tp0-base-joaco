@@ -1,5 +1,6 @@
 import socket
 import logging
+import signal
 
 
 class Server:
@@ -18,8 +19,7 @@ class Server:
         finishes, servers starts to accept new connections again
         """
 
-        # TODO: Modify this program to handle signal to graceful shutdown
-        # the server
+        signal.signal(signal.SIGINT, self.__sigint_handler)
         while True:
             client_sock = self.__accept_new_connection()
             self.__handle_client_connection(client_sock)
@@ -41,6 +41,7 @@ class Server:
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
         finally:
+            client_sock.shutdown()
             client_sock.close()
 
     def __accept_new_connection(self):
@@ -56,3 +57,8 @@ class Server:
         c, addr = self._server_socket.accept()
         logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
         return c
+
+    def __sigint_handler(self):
+        self._server_socket.shutdown()
+        self._server_socket.close()
+        exit(0)
