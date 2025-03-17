@@ -1,3 +1,12 @@
+# Resolucion
+## Ej1
+
+Para este ejercicio se opto por realizar el script en python (el cual es llamado por el script de bash)
+Se hizo a mano copiando las secciones del dockerfile en variables y usando String.replace por simplicidad
+
+No hubo mayores desafios
+
+
 # TP0: Docker + Comunicaciones + Concurrencia
 
 En el presente repositorio se provee un esqueleto básico de cliente/servidor, en donde todas las dependencias del mismo se encuentran encapsuladas en containers. Los alumnos deberán resolver una guía de ejercicios incrementales, teniendo en cuenta las condiciones de entrega descritas al final de este enunciado.
