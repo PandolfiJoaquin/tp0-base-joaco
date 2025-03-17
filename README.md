@@ -1,3 +1,18 @@
+# Resolucion
+## Ej2
+
+Se usaron volumnes de docker para evitar tener que construir la imagen. particularmente se usaron
+[binds](https://docs.docker.com/engine/storage/bind-mounts/#considerations-and-constraints)   acorde a lo recomendado en al documentacion oficial
+
+El principal desafio fue notar que una de las variables de entorno que se observaba en los tests
+que sea sobrescrita, era pasada no por el archivo de configuracion sino por el archivo docker compose.
+Pero no represento un problema mayor
+
+Usar un volumen evita tener que reconstruir la imagen y simplemente al levantar el container
+se monta este volumen y se accede al archivo de configuracion brindado por el host
+
+
+
 # TP0: Docker + Comunicaciones + Concurrencia
 
 En el presente repositorio se provee un esqueleto básico de cliente/servidor, en donde todas las dependencias del mismo se encuentran encapsuladas en containers. Los alumnos deberán resolver una guía de ejercicios incrementales, teniendo en cuenta las condiciones de entrega descritas al final de este enunciado.
