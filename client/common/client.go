@@ -88,9 +88,6 @@ func (c *Client) StartClientLoop() {
 				return
 			}
 		}
-
-		// Wait a time between sending one message and the next one
-
 	}
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
 }

@@ -1,3 +1,18 @@
+# Resolucion
+## Ej4
+
+Aca se diferencio deacuerdo al lenguaje. 
+
+En el caso del cliente (go) se usaron channels y una gorutine para poder mantener un hilo 
+esperando posibles interrupciones y la rutina realizando la tarea necesaria. Esta al terminar
+(o encontrar un error) avisa por un channel al hilo principal.
+
+
+En el servidor en cambio (python) se uso la instruccion finally para cerrar los recursos antes 
+de terminar la ejecucion. lo que dispara el cierre de la ejecucion es la invocacion a exit
+que se puede encontrar en el handler de la señal indicada
+
+
 # TP0: Docker + Comunicaciones + Concurrencia
 
 En el presente repositorio se provee un esqueleto básico de cliente/servidor, en donde todas las dependencias del mismo se encuentran encapsuladas en containers. Los alumnos deberán resolver una guía de ejercicios incrementales, teniendo en cuenta las condiciones de entrega descritas al final de este enunciado.
