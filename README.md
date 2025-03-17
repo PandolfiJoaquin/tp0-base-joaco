@@ -6,6 +6,14 @@ Se hizo a mano copiando las secciones del dockerfile en variables y usando Strin
 
 No hubo mayores desafios
 
+para ejecutar el script y ver su funcionalidad: 
+```bash
+./generar-compose-dev.yaml docker-compose-dev.yaml <cantidad-clientes>
+make docker-compose-up && docker-compose-logs
+```
+
+Se deberia observar los logs correspondientes a los clientes indicados por parametro en el script.
+Requiere docker y python3 instalaldos en el host
 
 # TP0: Docker + Comunicaciones + Concurrencia
 
