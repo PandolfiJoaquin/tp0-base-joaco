@@ -1,3 +1,18 @@
+# Resolucion
+## Ej3
+
+Dada la limitacion de no abrir puertos para realizar el health-check del servidor, se recurrio a
+la red definida por la imagen. para acceder a esta, se utilizo otro container al cual se le 
+indicaba por parametro que red usar y luego este con netcat enviaba un mensaje al servidor (a
+esa altura un echo server y compara la respuesta).
+
+Se encontro desafio cuando en los tests no funcionaba el validador y este se quedaba colgado. Sin embargo
+se soluciono al enviar un mensaje mas largo. Esto se lo atribuyo al largo fijo que se lee en el servidor
+
+
+
+
+
 # TP0: Docker + Comunicaciones + Concurrencia
 
 En el presente repositorio se provee un esqueleto básico de cliente/servidor, en donde todas las dependencias del mismo se encuentran encapsuladas en containers. Los alumnos deberán resolver una guía de ejercicios incrementales, teniendo en cuenta las condiciones de entrega descritas al final de este enunciado.
