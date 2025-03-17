@@ -25,14 +25,24 @@ type ClientConfig struct {
 // Client Entity that encapsulates how
 type Client struct {
 	config ClientConfig
+	bet    Bet
 	conn   net.Conn
+}
+
+type Bet struct {
+	Name      string
+	Surname   string
+	Dni       int
+	BirthDate string
+	Number    int
 }
 
 // NewClient Initializes a new client receiving the configuration
 // as a parameter
-func NewClient(config ClientConfig) *Client {
+func NewClient(config ClientConfig, bet Bet) *Client {
 	client := &Client{
 		config: config,
+		bet:    bet,
 	}
 	return client
 }
@@ -58,14 +68,13 @@ func (c *Client) StartClientLoop() {
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
 	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
-		// Create the connection the server in every loop iteration. Send an
 
 		msgDoneCh := make(chan bool)
 		errCh := make(chan error)
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGTERM)
 
-		go c.sendAndReadResponse(msgID, msgDoneCh, errCh)
+		go c.sendAndReadResponse(msgID, msgDoneCh, errCh, c.bet)
 		select {
 		case <-msgDoneCh:
 			break
@@ -95,19 +104,15 @@ func (c *Client) StartClientLoop() {
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
 }
 
-func (c *Client) sendAndReadResponse(msgID int, msgDoneCh chan<- bool, errCh chan<- error) {
+func (c *Client) sendAndReadResponse(msgID int, msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
 	if err := c.createClientSocket(); err != nil {
 		errCh <- err
 		return
 	}
 
 	// TODO: Modify the send to avoid short-write
-	if _, err := fmt.Fprintf(
-		c.conn,
-		"[CLIENT %v] Message N°%v\n",
-		c.config.ID,
-		msgID,
-	); err != nil {
+
+	if _, err := fmt.Fprintf(c.conn, "%v", bet); err != nil {
 		errCh <- err
 		return
 	}

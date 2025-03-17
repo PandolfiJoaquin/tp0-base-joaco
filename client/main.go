@@ -32,14 +32,40 @@ func InitConfig() (*viper.Viper, error) {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	// Add env variables supported
-	v.BindEnv("id")
-	v.BindEnv("server", "address")
-	v.BindEnv("loop", "period")
-	v.BindEnv("loop", "amount")
-	v.BindEnv("log", "level")
+
+	if v.BindEnv("id") != nil {
+		fmt.Printf("Error loading env var %v", "id")
+	}
+	if v.BindEnv("server", "address") != nil {
+		fmt.Printf("Error loading env var %v.%v", "server", "address")
+	}
+	if v.BindEnv("loop", "period") != nil {
+		fmt.Printf("Error loading env var %v.%v", "loop", "period")
+	}
+	if v.BindEnv("loop", "amount") != nil {
+		fmt.Printf("Error loading env var %v.%v", "loop", "amount")
+	}
+	if v.BindEnv("log", "level") != nil {
+		fmt.Printf("Error loading env var %v.%v", "log", "level")
+	}
+	if v.BindEnv("bet", "name") != nil {
+		fmt.Printf("Error loading env var %v.%v", "bet", "name")
+	}
+	if v.BindEnv("bet", "surname") != nil {
+		fmt.Printf("Error loading env var %v.%v", "bet", "surname")
+	}
+	if v.BindEnv("bet", "dni") != nil {
+		fmt.Printf("Error loading env var %v.%v", "bet", "dni")
+	}
+	if v.BindEnv("bet", "birthdate") != nil {
+		fmt.Printf("Error loading env var %v.%v", "bet", "birthdate")
+	}
+	if v.BindEnv("bet", "number") != nil {
+		fmt.Printf("Error loading env var %v.%v", "bet", "number")
+	}
 
 	// Try to read configuration from config file. If config file
-	// does not exists then ReadInConfig will fail but configuration
+	// does not exist then ReadInConfig will fail but configuration
 	// can be loaded from the environment variables so we shouldn't
 	// return an error in that case
 	v.SetConfigFile("./config.yaml")
@@ -110,6 +136,14 @@ func main() {
 		LoopPeriod:    v.GetDuration("loop.period"),
 	}
 
-	client := common.NewClient(clientConfig)
+	bet := common.Bet{
+		Name:      v.GetString("bet.name"),
+		Surname:   v.GetString("bet.surname"),
+		Dni:       v.GetInt("bet.dni"),
+		BirthDate: v.GetString("bet.birthdate"),
+		Number:    v.GetInt("bet.number"),
+	}
+
+	client := common.NewClient(clientConfig, bet)
 	client.StartClientLoop()
 }
