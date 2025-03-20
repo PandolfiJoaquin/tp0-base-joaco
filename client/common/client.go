@@ -2,7 +2,8 @@ package common
 
 import (
 	"bufio"
-	"fmt"
+	"bytes"
+	"encoding/binary"
 	"net"
 	"os"
 	"os/signal"
@@ -32,9 +33,9 @@ type Client struct {
 type Bet struct {
 	Name      string
 	Surname   string
-	Dni       int
+	Dni       uint64
 	BirthDate string
-	Number    int
+	Number    uint64
 }
 
 // NewClient Initializes a new client receiving the configuration
@@ -74,7 +75,7 @@ func (c *Client) StartClientLoop() {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGTERM)
 
-		go c.sendAndReadResponse(msgID, msgDoneCh, errCh, c.bet)
+		go c.sendAndReadResponse(msgDoneCh, errCh, c.bet)
 		select {
 		case <-msgDoneCh:
 			break
@@ -104,17 +105,31 @@ func (c *Client) StartClientLoop() {
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
 }
 
-func (c *Client) sendAndReadResponse(msgID int, msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
+func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
 	if err := c.createClientSocket(); err != nil {
 		errCh <- err
 		return
 	}
 
 	// TODO: Modify the send to avoid short-write
-
-	if _, err := fmt.Fprintf(c.conn, "%v", bet); err != nil {
-		errCh <- err
-		return
+	log.Infof("unserialize bet: %v", bet)
+	dataToSend := c.protocolSerializeBet(bet)
+	log.Infof("serialize bet: %v", dataToSend)
+	dataSended := 0
+	log.Debug("data to send ", dataToSend)
+	log.Debug(len(dataToSend))
+	for dataSended < len(dataToSend) {
+		//n, err := fmt.Fprint(c.conn, dataToSend)
+		n, err := c.conn.Write(dataToSend)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		dataSended += n
+		log.Debugf("sended: %v bytes. data left: %v bytes",
+			n,
+			len(dataToSend)-dataSended)
+		time.Sleep(c.config.LoopPeriod)
 	}
 
 	msg, err := bufio.NewReader(c.conn).ReadString('\n')
@@ -136,4 +151,23 @@ func (c *Client) sendAndReadResponse(msgID int, msgDoneCh chan<- bool, errCh cha
 	}
 
 	return
+}
+
+func (c *Client) protocolSerializeBet(bet Bet) []byte {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, uint8(1))
+	protocolEncodeString(buf, bet.Name)
+	protocolEncodeString(buf, bet.Surname)
+	binary.Write(buf, binary.LittleEndian, bet.Dni)
+	protocolEncodeString(buf, bet.BirthDate)
+	binary.Write(buf, binary.LittleEndian, bet.Number)
+
+	return buf.Bytes()
+
+}
+
+func protocolEncodeString(buf *bytes.Buffer, s string) {
+	nameBytes := []byte(s)
+	binary.Write(buf, binary.LittleEndian, uint16(len(nameBytes))) // Write length
+	buf.Write(nameBytes)                                           // Write actual string bytes
 }

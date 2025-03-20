@@ -36,7 +36,7 @@ class Server:
         """
         try:
             # TODO: Modify the receive to avoid short-reads
-            msg = client_sock.recv(1024).rstrip().decode('utf-8')
+            msg = self.__recv_bet(client_sock)
             addr = client_sock.getpeername()
             logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
             # TODO: Modify the send to avoid short-writes
@@ -66,3 +66,29 @@ class Server:
         self._server_socket.close()
         self.running = False
         exit(0)
+
+
+    def __recv_bet(self, client_sock):
+        msg_code = client_sock.recv(1)[0]
+        if msg_code != 1:
+            return "Invalid msg"
+        
+        name = self.__recv_string(client_sock)
+        surname = self.__recv_string(client_sock)
+        dni = int.from_bytes(client_sock.recv(8), "little")
+        birthdate = self.__recv_string(client_sock)
+        bet_number = self.__recv_int(client_sock)
+        return " ".join([name, surname, f"{dni}", birthdate, f"{bet_number}"])
+
+    def __recv_int(self, client_sock):
+        return int.from_bytes(client_sock.recv(8), "little")
+    
+    def __recv_string(self, client_sock):
+        l = int.from_bytes(client_sock.recv(2),"little")
+        logging.debug(f"now readingd {l} bytes")
+        d = client_sock.recv(l).decode('utf-8')
+        logging.debug(f"surname: {d}")
+        return d
+
+        
+
