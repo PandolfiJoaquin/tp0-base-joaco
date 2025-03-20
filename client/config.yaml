@@ -12,5 +12,7 @@ bet:
   name: "gyro"
   surname: "zeppelli"
   dni: 12345678
-  birthdate: "24/8/1886"
+  birthdate: "1886-08-24"
   number: 4815162342
+
+agency: 1

@@ -36,6 +36,9 @@ func InitConfig() (*viper.Viper, error) {
 	if v.BindEnv("id") != nil {
 		fmt.Printf("Error loading env var %v", "id")
 	}
+	if v.BindEnv("agency") != nil {
+		fmt.Printf("Error loading env var %v", "id")
+	}
 	if v.BindEnv("server", "address") != nil {
 		fmt.Printf("Error loading env var %v.%v", "server", "address")
 	}
@@ -139,9 +142,10 @@ func main() {
 	bet := common.Bet{
 		Name:      v.GetString("bet.name"),
 		Surname:   v.GetString("bet.surname"),
-		Dni:       uint64(v.GetInt("bet.dni")),
+		Dni:       v.GetUint64("bet.dni"),
 		BirthDate: v.GetString("bet.birthdate"),
-		Number:    uint64(v.GetInt("bet.number")),
+		Number:    v.GetUint64("bet.number"),
+		Agency:    v.GetUint64("agency"),
 	}
 
 	client := common.NewClient(clientConfig, bet)

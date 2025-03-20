@@ -1,6 +1,7 @@
 import socket
 import logging
 import signal
+import common.utils as utils
 
 
 class Server:
@@ -78,7 +79,17 @@ class Server:
         dni = int.from_bytes(client_sock.recv(8), "little")
         birthdate = self.__recv_string(client_sock)
         bet_number = self.__recv_int(client_sock)
-        return " ".join([name, surname, f"{dni}", birthdate, f"{bet_number}"])
+        agency = self.__recv_int(client_sock)
+        #return " ".join([name, surname, f"{dni}", birthdate, f"{bet_number}", agency])
+        return utils.Bet(
+            agency=agency,
+            first_name=name,
+            last_name=surname,
+            document=dni,
+            birthdate=birthdate,
+            number=bet_number
+        )
+        
 
     def __recv_int(self, client_sock):
         return int.from_bytes(client_sock.recv(8), "little")

@@ -1,7 +1,6 @@
 package common
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/binary"
 	"net"
@@ -36,6 +35,7 @@ type Bet struct {
 	Dni       uint64
 	BirthDate string
 	Number    uint64
+	Agency    uint64
 }
 
 // NewClient Initializes a new client receiving the configuration
@@ -102,7 +102,6 @@ func (c *Client) StartClientLoop() {
 		// Wait a time between sending one message and the next one
 
 	}
-	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.ID)
 }
 
 func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
@@ -114,12 +113,9 @@ func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, 
 	// TODO: Modify the send to avoid short-write
 	log.Infof("unserialize bet: %v", bet)
 	dataToSend := c.protocolSerializeBet(bet)
-	log.Infof("serialize bet: %v", dataToSend)
 	dataSended := 0
-	log.Debug("data to send ", dataToSend)
 	log.Debug(len(dataToSend))
 	for dataSended < len(dataToSend) {
-		//n, err := fmt.Fprint(c.conn, dataToSend)
 		n, err := c.conn.Write(dataToSend)
 		if err != nil {
 			errCh <- err
@@ -129,19 +125,10 @@ func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, 
 		log.Debugf("sended: %v bytes. data left: %v bytes",
 			n,
 			len(dataToSend)-dataSended)
-		time.Sleep(c.config.LoopPeriod)
 	}
-
-	msg, err := bufio.NewReader(c.conn).ReadString('\n')
-	if err != nil {
-		errCh <- err
-		return
-	}
-	log.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
-		c.config.ID,
-		msg,
-	)
+	log.Infof("action: apuesta_enviada | result: success | dni: %v | numero: %v", bet.Dni, bet.Number)
 	time.Sleep(c.config.LoopPeriod)
+
 	msgDoneCh <- true
 	if err := c.conn.Close(); err != nil {
 		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
@@ -161,6 +148,7 @@ func (c *Client) protocolSerializeBet(bet Bet) []byte {
 	binary.Write(buf, binary.LittleEndian, bet.Dni)
 	protocolEncodeString(buf, bet.BirthDate)
 	binary.Write(buf, binary.LittleEndian, bet.Number)
+	binary.Write(buf, binary.LittleEndian, bet.Agency)
 
 	return buf.Bytes()
 
