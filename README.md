@@ -1,39 +1,31 @@
 # Resolucion
 
-## Ej5
+## Ej6
 
-protocolo definido:
+En este ejercicio se modifica el protocolo para enviar los mensajes en baches
 
-para esta primera version, donde el unico mensaje en la red sera para informar de una apuesta
-individual, pero previendo que en los ejercicios siguientes se agregaran tipos de mensaje
-(ganador, envio de apuestas finalizado) y que se enviaran por baches los mensajes, opto por un
-formato tipo-longitud-data. particularmente para estes caso
+de forma que con los mensajes bet definido en el ej 5: 
+string = {length length-of-payload (2 bytes), payload}
 
-
-
-<codigo mensaje> <largo_nombre> <nombre> <largo_apellido> <apellido> <dni> <largo fº nacimiento> <fecha nacimiento>
-
-type Bet struct {
-Name string
-Surname string
-Dni uint32
-BirthDate string
-Number uint32
+bet = {
+  type: 0x01
+  name: string
+  surname: string
+  dni: string
+  birthdate: string
+  number: date
+  agency: date
 }
 
-| mensaje             | largo mensaje        |
-|---------------------|----------------------|
-| codigo mensaje      | 1 byte               |
-| largo_nombre        | 2 bytes              |
-| nombre              | <largo_nombre>       |
-| largo_apellido      | 2 bytes              |
-| apellido            | <largo_apellido>     |
-| dni                 | 8 bytes              |
-| largo fº nacimiento | 2 bytes              |
-| fecha_nacimiento    | <largo fº nacimiento |
-| numero              | 8 bytes              |
+se declara un tipo nuevo
 
-_apuesta_ _largo apuesta_ _informacion apuesta_
+
+batch = {
+  type: 0x02
+  amount: (2 bytes)
+  bets: <serialize-bets>
+}
+
 
 # TP0: Docker + Comunicaciones + Concurrencia
 

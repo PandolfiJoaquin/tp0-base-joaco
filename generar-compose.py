@@ -28,17 +28,16 @@ CLIENT_SERVICE='''
     entrypoint: /client
     environment:
       - CLI_ID=<client-number>
-      - CLI_BET_NAME=gyro
-      - CLI_BET_SURNAME=zeppelli
-      - CLI_BET_DNI=12345678
-      - CLI_BET_BIRTHDATE=1886-08-24
-      - CLI_BET_NUMBER=4815162342
-      - CLI_AGENCY=<client-number>
     
     volumes:
       - type: bind
         source: ./client/config.yaml
         target: /config.yaml
+      - type: bind
+        source: ./.data/dataset.zip
+        target: /dataset.zip 
+        
+    
     networks:
       - testing_net
     depends_on:
