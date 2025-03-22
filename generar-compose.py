@@ -33,6 +33,7 @@ CLIENT_SERVICE='''
       - CLI_BET_DNI=12345678
       - CLI_BET_BIRTHDATE=1886-08-24
       - CLI_BET_NUMBER=4815162342
+      - CLI_AGENCY=<client-number>
     
     volumes:
       - type: bind

@@ -79,9 +79,9 @@ class Server:
         name = self.__recv_string(client_sock)
         surname = self.__recv_string(client_sock)
         dni = self.__recv_string(client_sock)
-        birthdate = self.__recv_string(client_sock)
-        bet_number = self.__recv_string(client_sock)
-        agency = self.__recv_string(client_sock)
+        birthdate = self.__recv_string(client_sock, ctx="birthdate")
+        bet_number = self.__recv_string(client_sock, ctx="bet_number")
+        agency = self.__recv_string(client_sock, ctx="agency")
         logging.debug("creating bet")
         bet = utils.Bet(
             agency=agency,
@@ -98,11 +98,12 @@ class Server:
     def __recv_int(self, client_sock):
         return int.from_bytes(recvall(client_sock, 8), "little")
     
-    def __recv_string(self, client_sock):
+    def __recv_string(self, client_sock, ctx=None):
+        suffix = f"| ctx: {ctx}" if ctx is not None else ""
         l = int.from_bytes(recvall(client_sock, 2),"little")
-        logging.debug(f"now readingd {l} bytes")
+        logging.debug(f"now readingd {l} bytes" + suffix)
         d = recvall(client_sock, l).decode('utf-8')
-        logging.debug(f"content: {d}")
+        logging.debug(f"content: {d}" + suffix)
         return d
 
 def recvall(skt, n):
