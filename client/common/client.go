@@ -126,6 +126,19 @@ func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, 
 			n,
 			len(dataToSend)-dataSended)
 	}
+	buff := make([]byte, 1)
+	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
+		errCh <- err
+	}
+	n := 0
+	for n < 1 {
+		i, err := c.conn.Write(buff)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		n += i
+	}
 	log.Infof("action: apuesta_enviada | result: success | dni: %v | numero: %v", bet.Dni, bet.Number)
 	time.Sleep(c.config.LoopPeriod)
 

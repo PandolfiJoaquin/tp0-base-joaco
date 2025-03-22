@@ -36,12 +36,14 @@ class Server:
         client socket will also be closed
         """
         try:
-            # TODO: Modify the receive to avoid short-reads
-            msg = self.__recv_bet(client_sock)
+            bet = self.__recv_bet(client_sock)
             addr = client_sock.getpeername()
-            logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
-            # TODO: Modify the send to avoid short-writes
-            client_sock.send("{}\n".format(msg).encode('utf-8'))
+            #logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {bet}')
+            utils.store_bets([bet])
+            logging.info(f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}")
+            client_sock.settimeout(5)
+            client_sock.sendall(b'\x00')
+
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
         finally:
@@ -76,11 +78,11 @@ class Server:
         
         name = self.__recv_string(client_sock)
         surname = self.__recv_string(client_sock)
-        dni = int.from_bytes(client_sock.recv(8), "little")
+        dni = self.__recv_int(client_sock)
         birthdate = self.__recv_string(client_sock)
         bet_number = self.__recv_int(client_sock)
         agency = self.__recv_int(client_sock)
-        #return " ".join([name, surname, f"{dni}", birthdate, f"{bet_number}", agency])
+        
         return utils.Bet(
             agency=agency,
             first_name=name,
@@ -92,14 +94,21 @@ class Server:
         
 
     def __recv_int(self, client_sock):
-        return int.from_bytes(client_sock.recv(8), "little")
+        return int.from_bytes(recvall(client_sock, 8), "little")
     
     def __recv_string(self, client_sock):
-        l = int.from_bytes(client_sock.recv(2),"little")
+        l = int.from_bytes(recvall(client_sock, 2),"little")
         logging.debug(f"now readingd {l} bytes")
-        d = client_sock.recv(l).decode('utf-8')
-        logging.debug(f"surname: {d}")
+        d = recvall(client_sock, l).decode('utf-8')
+        logging.debug(f"content: {d}")
         return d
 
-        
+def recvall(skt, n):
+    data = bytearray()
+    while len(data) < n:
+        packet = skt.recv(n - len(data))
+        if not packet:
+            raise ConnectionError("Connection closed before receiving all data")
+        data.extend(packet)
+    return bytes(data)
 
