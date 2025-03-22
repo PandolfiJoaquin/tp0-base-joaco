@@ -78,10 +78,10 @@ class Server:
         
         name = self.__recv_string(client_sock)
         surname = self.__recv_string(client_sock)
-        dni = self.__recv_int(client_sock)
+        dni = self.__recv_string(client_sock)
         birthdate = self.__recv_string(client_sock)
-        bet_number = self.__recv_int(client_sock)
-        agency = self.__recv_int(client_sock)
+        bet_number = self.__recv_string(client_sock)
+        agency = self.__recv_string(client_sock)
         logging.debug("creating bet")
         bet = utils.Bet(
             agency=agency,

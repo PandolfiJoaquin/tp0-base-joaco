@@ -142,10 +142,10 @@ func main() {
 	bet := common.Bet{
 		Name:      v.GetString("bet.name"),
 		Surname:   v.GetString("bet.surname"),
-		Dni:       v.GetUint64("bet.dni"),
+		Dni:       v.GetString("bet.dni"),
 		BirthDate: v.GetString("bet.birthdate"),
-		Number:    v.GetUint64("bet.number"),
-		Agency:    v.GetUint64("agency"),
+		Number:    v.GetString("bet.number"),
+		Agency:    v.GetString("agency"),
 	}
 
 	client := common.NewClient(clientConfig, bet)

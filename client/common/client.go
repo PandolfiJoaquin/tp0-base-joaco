@@ -32,10 +32,10 @@ type Client struct {
 type Bet struct {
 	Name      string
 	Surname   string
-	Dni       uint64
+	Dni       string
 	BirthDate string
-	Number    uint64
-	Agency    uint64
+	Number    string
+	Agency    string
 }
 
 // NewClient Initializes a new client receiving the configuration
@@ -158,10 +158,13 @@ func (c *Client) protocolSerializeBet(bet Bet) []byte {
 	binary.Write(buf, binary.LittleEndian, uint8(1))
 	protocolEncodeString(buf, bet.Name)
 	protocolEncodeString(buf, bet.Surname)
-	binary.Write(buf, binary.LittleEndian, bet.Dni)
+	//binary.Write(buf, binary.LittleEndian, bet.Dni)
+	protocolEncodeString(buf, bet.Dni)
 	protocolEncodeString(buf, bet.BirthDate)
-	binary.Write(buf, binary.LittleEndian, bet.Number)
-	binary.Write(buf, binary.LittleEndian, bet.Agency)
+	//binary.Write(buf, binary.LittleEndian, bet.Number)
+	protocolEncodeString(buf, bet.Number)
+	//binary.Write(buf, binary.LittleEndian, bet.Agency)
+	protocolEncodeString(buf, bet.Agency)
 
 	return buf.Bytes()
 
