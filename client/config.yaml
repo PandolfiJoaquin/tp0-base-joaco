@@ -8,11 +8,5 @@ log:
 batch:
   maxAmount: 10
 
-bet:
-  name: "gyro"
-  surname: "zeppelli"
-  dni: "12345678"
-  birthdate: "1886-08-24"
-  number: "4815162342"
 
 agency: 1
