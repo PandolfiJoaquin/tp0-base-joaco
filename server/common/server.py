@@ -82,8 +82,8 @@ class Server:
         birthdate = self.__recv_string(client_sock)
         bet_number = self.__recv_int(client_sock)
         agency = self.__recv_int(client_sock)
-        
-        return utils.Bet(
+        logging.debug("creating bet")
+        bet = utils.Bet(
             agency=agency,
             first_name=name,
             last_name=surname,
@@ -91,6 +91,8 @@ class Server:
             birthdate=birthdate,
             number=bet_number
         )
+        logging.debug("returning bet")
+        return bet
         
 
     def __recv_int(self, client_sock):
