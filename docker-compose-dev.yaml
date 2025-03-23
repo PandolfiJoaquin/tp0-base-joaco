@@ -22,7 +22,7 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=1
-      - CLI_BATCH_MAX_AMOUNT=20
+      - CLI_BATCH_MAXAMOUNT=20
     
     volumes:
       - type: bind
