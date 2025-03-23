@@ -18,10 +18,11 @@ var log = logging.MustGetLogger("log")
 
 // ClientConfig Configuration used by the client
 type ClientConfig struct {
-	ID            string
-	ServerAddress string
-	LoopAmount    int
-	LoopPeriod    time.Duration
+	ID              string
+	ServerAddress   string
+	LoopAmount      int
+	LoopPeriod      time.Duration
+	MaxBetsPerBatch int
 }
 
 // Client Entity that encapsulates how
@@ -140,8 +141,11 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			}
 			n += i
 		}
-		log.Debug("batch sended successfully", buff)
-		time.Sleep(c.config.LoopPeriod)
+		if buff[0] != 0 {
+			log.Errorf("Error sending batch. Server response: %v", buff)
+		} else {
+			log.Debug("batch sended successfully", buff)
+		}
 	}
 
 	if err := c.conn.Close(); err != nil {
@@ -222,7 +226,7 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 		for _, bet := range bets {
 			//type length (amount of bets being send) payload (bet1bet2bet3)
 
-			if len(t)+2+len(payload) > 8000 || betsInBatch >= 20 /*maxAmount*/ {
+			if len(t)+2+len(payload) > 8000 || betsInBatch >= c.config.MaxBetsPerBatch {
 				log.Debugf("t: %v, l: %v, payload: %v", len(t), betsInBatch, len(payload))
 				log.Debugf("Batch full. sending batch with %v bets", betsInBatch)
 				ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)

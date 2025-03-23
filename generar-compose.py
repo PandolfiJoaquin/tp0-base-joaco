@@ -28,6 +28,7 @@ CLIENT_SERVICE='''
     entrypoint: /client
     environment:
       - CLI_ID=<client-number>
+      - CLI_BATCH_MAXAMOUNT=20
     
     volumes:
       - type: bind

@@ -47,6 +47,8 @@ class Server:
             if t == 2:
                 logging.info("action: receive_batch | result: on_progress")
                 batch = self.__recv_batch(client_sock,t)
+                if len(batch) == 0:
+                    return
                 for bet in batch:
                     utils.store_bets([bet])
                 logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
@@ -57,6 +59,7 @@ class Server:
 
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
+            
         finally:
             client_sock.shutdown(socket.SHUT_WR)
             client_sock.close()
@@ -89,13 +92,20 @@ class Server:
         batch = []
         amt_of_bets = self.recv_int_2_bytes(client_sock)
         logging.debug(f"amt_of_bets in batch: {amt_of_bets}")
-        for i in range(amt_of_bets):
-            batch.append(self.__recv_bet(client_sock))
-            logging.info(f"received {i+1}/{amt_of_bets} bets")
-        
-        logging.info(f"all bets have been received")
-        
-        return batch
+        try:
+            for i in range(amt_of_bets):
+                batch.append(self.__recv_bet(client_sock))
+                logging.info(f"received {i+1}/{amt_of_bets} bets")
+            
+            logging.info(f"all bets have been received")
+            
+            return batch
+        except:
+            self.__send_batch_fail_msg(client_sock)
+            logging.error(f"action: apuesta_recibida | result: fail | cantidad: {amt_of_bets}.")
+            client_sock.settimeout(5)
+            client_sock.sendall(b'\x00') #send error on batch
+            return []
 
     def __recv_bet(self, client_sock):
         msg_code = client_sock.recv(1)[0]

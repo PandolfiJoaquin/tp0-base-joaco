@@ -51,6 +51,9 @@ func InitConfig() (*viper.Viper, error) {
 	if v.BindEnv("log", "level") != nil {
 		fmt.Printf("Error loading env var %v.%v", "log", "level")
 	}
+	if v.BindEnv("batch", "maxAmount") != nil {
+		fmt.Printf("Error loading env var %v.%v", "log", "level")
+	}
 
 	// Try to read configuration from config file. If config file
 	// does not exist then ReadInConfig will fail but configuration
@@ -118,12 +121,13 @@ func main() {
 	PrintConfig(v)
 
 	clientConfig := common.ClientConfig{
-		ServerAddress: v.GetString("server.address"),
-		ID:            v.GetString("id"),
-		LoopAmount:    v.GetInt("loop.amount"),
-		LoopPeriod:    v.GetDuration("loop.period"),
+		ServerAddress:   v.GetString("server.address"),
+		ID:              v.GetString("id"),
+		LoopAmount:      v.GetInt("loop.amount"),
+		LoopPeriod:      v.GetDuration("loop.period"),
+		MaxBetsPerBatch: v.GetInt("batch.maxAmount"),
 	}
-
+	log.Debugf("config: %v", clientConfig)
 	client := common.NewClient(clientConfig)
 	client.StartClientLoop()
 }
