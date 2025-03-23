@@ -108,9 +108,10 @@ func (c *Client) StartClientLoop() {
 func (c *Client) sendAll(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
 	dataChan := c.protocolSerializeBets(bets)
 	for dataToSend := range dataChan {
-		err := c.sendData(dataToSend)
+		err := c.sendData(dataToSend, "batch")
 		if err != nil {
 			errCh <- err
+			return
 		}
 	}
 
@@ -118,54 +119,16 @@ func (c *Client) sendAll(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) 
 	log.Infof("agency done. notifying server")
 	allDoneMsgSerialized := append([]byte{uint8(3)}, uint8(id))
 
-	if err := c.createClientSocket(); err != nil {
+	if err := c.sendData(allDoneMsgSerialized, "agency done"); err != nil {
 		errCh <- err
 		return
-	}
-
-	dataSended := 0
-	for dataSended < len(allDoneMsgSerialized) {
-		n, err := c.conn.Write(allDoneMsgSerialized)
-		if err != nil {
-			errCh <- err
-			return
-		}
-		dataSended += n
-		log.Debugf("sended: %v bytes. data left: %v bytes",
-			n,
-			len(allDoneMsgSerialized)-dataSended)
-	}
-
-	//recv ack from agency done
-	buff := make([]byte, 1)
-	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
-		errCh <- err
-	}
-	n := 0
-	for n < 1 {
-		i, err := c.conn.Read(buff)
-		if err != nil {
-			errCh <- err
-			return
-		}
-		n += i
-	}
-	if buff[0] != 0 {
-		log.Errorf("Error sending agency done. Server response: %v", buff)
-	} else {
-		log.Info("ack sended successfully", buff)
-	}
-
-	err := c.conn.Close()
-	if err != nil {
-		errCh <- err
 	}
 	msgDoneCh <- true
 
 	return
 }
 
-func (c *Client) sendData(dataToSend []byte) error {
+func (c *Client) sendData(dataToSend []byte, ctx string) error {
 	log.Debugf("dataSended: %v", dataToSend)
 	//create socket
 	if err := c.createClientSocket(); err != nil {
@@ -198,9 +161,9 @@ func (c *Client) sendData(dataToSend []byte) error {
 		n += i
 	}
 	if buff[0] != 0 {
-		log.Errorf("Error sending batch. Server response: %v", buff)
+		log.Errorf("Error sending %v. Server response: %v", ctx, buff)
 	} else {
-		log.Debug("batch sended successfully", buff)
+		log.Debugf("data for %v successfully", ctx)
 	}
 
 	if err := c.conn.Close(); err != nil {
