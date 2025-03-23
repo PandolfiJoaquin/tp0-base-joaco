@@ -4,6 +4,8 @@
 
 En este ejercicio se modifica el protocolo para enviar los mensajes en baches
 
+
+
 de forma que con los mensajes bet definido en el ej 5: 
 string = {length length-of-payload (2 bytes), payload}
 
@@ -22,7 +24,7 @@ se declara un tipo nuevo
 
 batch = {
   type: 0x02
-  amount: (2 bytes)
+  amount-of-bets: (2 bytes)
   bets: <serialize-bets>
 }
 

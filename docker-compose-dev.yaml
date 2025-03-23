@@ -22,12 +22,6 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=1
-      - CLI_BET_NAME=gyro
-      - CLI_BET_SURNAME=zeppelli
-      - CLI_BET_DNI=12345678
-      - CLI_BET_BIRTHDATE=1886-08-24
-      - CLI_BET_NUMBER=4815162342
-      - CLI_AGENCY=1
     
     volumes:
       - type: bind
@@ -36,6 +30,8 @@ services:
       - type: bind
         source: ./.data/agency-1.csv
         target: /agency-1.csv
+        
+    
     networks:
       - testing_net
     depends_on:

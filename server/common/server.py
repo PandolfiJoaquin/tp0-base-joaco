@@ -47,20 +47,13 @@ class Server:
             if t == 2:
                 logging.info("action: receive_batch | result: on_progress")
                 batch = self.__recv_batch(client_sock,t)
-                logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
                 for bet in batch:
                     utils.store_bets([bet])
+                logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
+                
                 client_sock.settimeout(5)
                 client_sock.sendall(b'\x00') #send ack for batch
                 client_sock.settimeout(None)
-                
-            
-            
-                
-            
-    
-
-                
 
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
