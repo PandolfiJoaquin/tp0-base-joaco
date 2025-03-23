@@ -76,7 +76,7 @@ func (c *Client) StartClientLoop() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM)
 
-	go c.sendAllBets(msgDoneCh, errCh, bets)
+	go c.sendAll(msgDoneCh, errCh, bets)
 	select {
 	case <-msgDoneCh:
 		log.Infof("action: send_batch | result: success | client_id: %v", c.config.ID)
@@ -105,71 +105,24 @@ func (c *Client) StartClientLoop() {
 
 }
 
-func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
+func (c *Client) sendAll(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
 	dataChan := c.protocolSerializeBets(bets)
 	for dataToSend := range dataChan {
-		log.Debugf("dataSended: %v", dataToSend)
-		//create socket
-		if err := c.createClientSocket(); err != nil {
-			errCh <- err
-			return
-		}
-		//send data. retry if necessary
-		dataSended := 0
-		for dataSended < len(dataToSend) {
-			n, err := c.conn.Write(dataToSend)
-			if err != nil {
-				errCh <- err
-				return
-			}
-			dataSended += n
-			log.Debugf("sended: %v bytes. data left: %v bytes",
-				n,
-				len(dataToSend)-dataSended)
-
-		}
-		//receive ack for the batch from the server
-		buff := make([]byte, 1)
-		if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
+		err := c.sendData(dataToSend)
+		if err != nil {
 			errCh <- err
 		}
-		n := 0
-		for n < 1 {
-			i, err := c.conn.Read(buff)
-			if err != nil {
-				errCh <- err
-				return
-			}
-			n += i
-		}
-		if buff[0] != 0 {
-			log.Errorf("Error sending batch. Server response: %v", buff)
-		} else {
-			log.Debug("batch sended successfully", buff)
-		}
-
-		if err := c.conn.Close(); err != nil {
-			log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
-				c.config.ID,
-				err,
-			)
-		}
-
-		//if err := c.getResults(); err != nil {
-		//	errCh <- err
-		//	return
-		//}
 	}
+
 	id, _ := strconv.Atoi(c.config.ID)
 	log.Infof("agency done. notifying server")
 	allDoneMsgSerialized := append([]byte{uint8(3)}, uint8(id))
 
-	//create socket
 	if err := c.createClientSocket(); err != nil {
 		errCh <- err
 		return
 	}
-	//send data. retry if necessary
+
 	dataSended := 0
 	for dataSended < len(allDoneMsgSerialized) {
 		n, err := c.conn.Write(allDoneMsgSerialized)
@@ -210,6 +163,53 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 	msgDoneCh <- true
 
 	return
+}
+
+func (c *Client) sendData(dataToSend []byte) error {
+	log.Debugf("dataSended: %v", dataToSend)
+	//create socket
+	if err := c.createClientSocket(); err != nil {
+		return err
+	}
+	//send data. retry if necessary
+	dataSended := 0
+	for dataSended < len(dataToSend) {
+		n, err := c.conn.Write(dataToSend)
+		if err != nil {
+			return err
+		}
+		dataSended += n
+		log.Debugf("sended: %v bytes. data left: %v bytes",
+			n,
+			len(dataToSend)-dataSended)
+
+	}
+	//receive ack for the batch from the server
+	buff := make([]byte, 1)
+	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
+		return err
+	}
+	n := 0
+	for n < 1 {
+		i, err := c.conn.Read(buff)
+		if err != nil {
+			return err
+		}
+		n += i
+	}
+	if buff[0] != 0 {
+		log.Errorf("Error sending batch. Server response: %v", buff)
+	} else {
+		log.Debug("batch sended successfully", buff)
+	}
+
+	if err := c.conn.Close(); err != nil {
+		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
+			c.config.ID,
+			err,
+		)
+	}
+	return nil
 }
 
 func (c *Client) protocolSerializeBet(bet Bet) []byte {
