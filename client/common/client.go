@@ -104,13 +104,15 @@ func (c *Client) StartClientLoop() {
 }
 
 func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
-	if err := c.createClientSocket(); err != nil {
-		errCh <- err
-		return
-	}
 	dataChan := c.protocolSerializeBets(bets)
 	for dataToSend := range dataChan {
 		log.Debugf("dataSended: %v", dataToSend)
+		//create socket
+		if err := c.createClientSocket(); err != nil {
+			errCh <- err
+			return
+		}
+		//send data. retry if necessary
 		dataSended := 0
 		for dataSended < len(dataToSend) {
 			n, err := c.conn.Write(dataToSend)
@@ -122,8 +124,9 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			log.Debugf("sended: %v bytes. data left: %v bytes",
 				n,
 				len(dataToSend)-dataSended)
-		}
 
+		}
+		//receive ack for the batch from the server
 		buff := make([]byte, 1)
 		if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
 			errCh <- err
@@ -137,18 +140,17 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			}
 			n += i
 		}
-		log.Debugf("batch sended successfully", buff)
+		log.Debug("batch sended successfully", buff)
+		time.Sleep(c.config.LoopPeriod)
 	}
 
-	time.Sleep(c.config.LoopPeriod)
-
-	msgDoneCh <- true
 	if err := c.conn.Close(); err != nil {
 		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
 			c.config.ID,
 			err,
 		)
 	}
+	msgDoneCh <- true
 
 	return
 }
@@ -220,7 +222,7 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 		for _, bet := range bets {
 			//type length (amount of bets being send) payload (bet1bet2bet3)
 
-			if len(t)+2+len(payload) > 8000 || betsInBatch > 2 /*maxAmount*/ {
+			if len(t)+2+len(payload) > 8000 || betsInBatch >= 20 /*maxAmount*/ {
 				log.Debugf("t: %v, l: %v, payload: %v", len(t), betsInBatch, len(payload))
 				log.Debugf("Batch full. sending batch with %v bets", betsInBatch)
 				ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)

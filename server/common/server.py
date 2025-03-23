@@ -12,7 +12,6 @@ class Server:
         signal.signal(signal.SIGINT, self.__sigterm_handler)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
-        self.client_has_not_ended = False
 
     def run(self):
         """
@@ -36,35 +35,35 @@ class Server:
         If a problem arises in the communication with the client, the
         client socket will also be closed
         """
-        self.client_has_not_ended = True
+        
+        addr = client_sock.getpeername()
         try:
-            while self.client_has_not_ended:
-                t_raw = recvall(client_sock, 1)
-                logging.info(f"t_raw: {t_raw}")
-                t = int.from_bytes(t_raw, "little")
-                if t == 1:
-                    logging.info(f"got a bet instead of a batch")
-                if t == 2:
-                    logging.info("action: receive_batch | result: on_progress")
-                    batch = self.__recv_batch(client_sock)
-                    logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
-                    for bet in batch:
-                        utils.store_bets([bet])
-                    client_sock.settimeout(5)
-                    client_sock.sendall(b'\x00')
-                    client_sock.settimeout(0)
-                    continue
-                self.client_has_not_ended = False
+            t_raw = recvall(client_sock, 1)
+            logging.info(f"t_raw: {t_raw}")
+            t = int.from_bytes(t_raw, "little")
+            if t == 1:
+                logging.info(f"got a bet instead of a batch")
+
+            if t == 2:
+                logging.info("action: receive_batch | result: on_progress")
+                batch = self.__recv_batch(client_sock,t)
+                logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
+                for bet in batch:
+                    utils.store_bets([bet])
+                client_sock.settimeout(5)
+                client_sock.sendall(b'\x00') #send ack for batch
+                client_sock.settimeout(None)
                 
-                    
+            
+            
                 
-                
-                addr = client_sock.getpeername()
+            
+    
 
                 
 
         except OSError as e:
-            logging.error("action: receive_message | result: fail | error: {e}")
+            logging.error(f"action: receive_message | result: fail | error: {e}")
         finally:
             client_sock.shutdown(socket.SHUT_WR)
             client_sock.close()
@@ -96,10 +95,10 @@ class Server:
             return [self.__recv_bet(client_sock)]
         batch = []
         amt_of_bets = self.recv_int_2_bytes(client_sock)
-        logging.debug(f"{amt_of_bets}")
+        logging.debug(f"amt_of_bets in batch: {amt_of_bets}")
         for i in range(amt_of_bets):
             batch.append(self.__recv_bet(client_sock))
-            logging.info(f"received {i+1}/{4} bets")
+            logging.info(f"received {i+1}/{amt_of_bets} bets")
         
         logging.info(f"all bets have been received")
         
