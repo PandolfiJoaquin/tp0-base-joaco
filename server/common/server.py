@@ -12,6 +12,7 @@ class Server:
         signal.signal(signal.SIGINT, self.__sigterm_handler)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
+        self.client_has_not_ended = False
 
     def run(self):
         """
@@ -35,18 +36,32 @@ class Server:
         If a problem arises in the communication with the client, the
         client socket will also be closed
         """
+        self.client_has_not_ended = True
         try:
-            batch = self.__recv_batch(client_sock)
-            
-            addr = client_sock.getpeername()
-            logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
-            
-            for bet in batch:
-                utils.store_bets([bet])
+            while self.client_has_not_ended:
+                t_raw = recvall(client_sock, 1)
+                logging.info(f"t_raw: {t_raw}")
+                t = int.from_bytes(t_raw, "little")
+                if t == 1:
+                    logging.info(f"got a bet instead of a batch")
+                if t == 2:
+                    logging.info("action: receive_batch | result: on_progress")
+                    batch = self.__recv_batch(client_sock)
+                    logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
+                    for bet in batch:
+                        utils.store_bets([bet])
+                    client_sock.settimeout(5)
+                    client_sock.sendall(b'\x00')
+                    client_sock.settimeout(0)
+                    continue
+                self.client_has_not_ended = False
+                
+                    
+                
+                
+                addr = client_sock.getpeername()
 
-            
-            client_sock.settimeout(5)
-            client_sock.sendall(b'\x00')
+                
 
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
@@ -75,10 +90,7 @@ class Server:
         exit(0)
 
 
-    def __recv_batch(self, client_sock):
-        t_raw = recvall(client_sock, 1)
-        logging.debug(f"t_raw {t_raw}")
-        t = int.from_bytes(t_raw, "little")
+    def __recv_batch(self, client_sock,t):
         if t != 2:
             logging.info(f"batches are not being used. {t}")
             return [self.__recv_bet(client_sock)]

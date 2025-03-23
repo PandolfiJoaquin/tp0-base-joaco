@@ -123,19 +123,21 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 				n,
 				len(dataToSend)-dataSended)
 		}
-	}
-	buff := make([]byte, 1)
-	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
-		errCh <- err
-	}
-	n := 0
-	for n < 1 {
-		i, err := c.conn.Write(buff)
-		if err != nil {
+
+		buff := make([]byte, 1)
+		if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
 			errCh <- err
-			return
 		}
-		n += i
+		n := 0
+		for n < 1 {
+			i, err := c.conn.Read(buff)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			n += i
+		}
+		log.Debugf("batch sended successfully", buff)
 	}
 
 	time.Sleep(c.config.LoopPeriod)
@@ -218,7 +220,7 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 		for _, bet := range bets {
 			//type length (amount of bets being send) payload (bet1bet2bet3)
 
-			if len(t)+2+len(payload) > 8000 && betsInBatch > 20 /*maxAmount*/ {
+			if len(t)+2+len(payload) > 8000 || betsInBatch > 2 /*maxAmount*/ {
 				log.Debugf("t: %v, l: %v, payload: %v", len(t), betsInBatch, len(payload))
 				log.Debugf("Batch full. sending batch with %v bets", betsInBatch)
 				ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)
