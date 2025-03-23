@@ -45,7 +45,6 @@ class Server:
                 logging.info(f"got a bet instead of a batch")
 
             if t == 2:
-                logging.info("action: receive_batch | result: on_progress")
                 batch = self.__recv_batch(client_sock,t)
                 if len(batch) == 0:
                     return
