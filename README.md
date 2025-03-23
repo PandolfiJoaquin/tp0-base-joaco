@@ -1,32 +1,22 @@
 # Resolucion
 
-## Ej6
+## Ej7
 
-En este ejercicio se modifica el protocolo para enviar los mensajes en baches
+Una vez mas para este ejercicio defino un protocolo entre los clientes y el servidor. 
+A diferencia del anterior no trabaja sobre lo ya construido por lo que se simplifica 
+un poco todo
 
+### Protocolo
 
+agency_done: 0x03 <agency_n>(1 byte)
 
-de forma que con los mensajes bet definido en el ej 5: 
-string = {length length-of-payload (2 bytes), payload}
+despues de este mensaje, el cliente le escribe al server por los resultados
 
-bet = {
-  type: 0x01
-  name: string
-  surname: string
-  dni: string
-  birthdate: string
-  number: date
-  agency: date
-}
-
-se declara un tipo nuevo
+results: 0x04 <agencey_n>(1 byte)
+response: a definir
 
 
-batch = {
-  type: 0x02
-  amount-of-bets: (2 bytes)
-  bets: <serialize-bets>
-}
+
 
 
 # TP0: Docker + Comunicaciones + Concurrencia

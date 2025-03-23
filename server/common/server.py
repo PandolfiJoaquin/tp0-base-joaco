@@ -12,6 +12,7 @@ class Server:
         signal.signal(signal.SIGINT, self.__sigterm_handler)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
+        self.agencies_done = []
 
     def run(self):
         """
@@ -55,6 +56,15 @@ class Server:
                 client_sock.settimeout(5)
                 client_sock.sendall(b'\x00') #send ack for batch
                 client_sock.settimeout(None)
+            
+            if t == 3:
+                id = int.from_bytes(recvall(client_sock, 1), "little")
+                logging.info(f"agency {id} done")
+                
+                client_sock.settimeout(5)
+                client_sock.sendall(b'\x00') #send ack for agency Done
+                client_sock.settimeout(None)
+
 
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")

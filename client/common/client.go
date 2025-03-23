@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -79,7 +80,7 @@ func (c *Client) StartClientLoop() {
 	select {
 	case <-msgDoneCh:
 		log.Infof("action: send_batch | result: success | client_id: %v", c.config.ID)
-		break
+
 	case err := <-errCh:
 		log.Infof("error received")
 		if err != nil {
@@ -146,14 +147,42 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 		} else {
 			log.Debug("batch sended successfully", buff)
 		}
+
+		if err := c.conn.Close(); err != nil {
+			log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
+				c.config.ID,
+				err,
+			)
+		}
+
+		//if err := c.getResults(); err != nil {
+		//	errCh <- err
+		//	return
+		//}
+	}
+	id, _ := strconv.Atoi(c.config.ID)
+	log.Infof("agency done. notifying server")
+	allDoneMsgSerialized := append([]byte{uint8(3)}, uint8(id))
+
+	//create socket
+	if err := c.createClientSocket(); err != nil {
+		errCh <- err
+		return
+	}
+	//send data. retry if necessary
+	dataSended := 0
+	for dataSended < len(allDoneMsgSerialized) {
+		n, err := c.conn.Write(allDoneMsgSerialized)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		dataSended += n
+		log.Debugf("sended: %v bytes. data left: %v bytes",
+			n,
+			len(allDoneMsgSerialized)-dataSended)
 	}
 
-	if err := c.conn.Close(); err != nil {
-		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",
-			c.config.ID,
-			err,
-		)
-	}
 	msgDoneCh <- true
 
 	return
@@ -242,10 +271,22 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 			log.Debugf("sending last batch with %v bets", betsInBatch)
 			ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)
 		}
+
+		//notify the server that the agency is done sending bets
+		//string  to uint8
+
 		close(ch)
 	}()
 	return ch
 }
+
+//func (c *Client) getResults() error {
+//
+//	if err := c.createClientSocket(); err != nil {
+//		return err
+//	}
+//	return nil
+//}
 
 func protocolEncodeString(buf *bytes.Buffer, s string) {
 	nameBytes := []byte(s)

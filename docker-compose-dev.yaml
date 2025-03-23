@@ -38,6 +38,29 @@ services:
     depends_on:
       - server
 
+
+  client2:
+    container_name: client2
+    image: client:latest
+    entrypoint: /client
+    environment:
+      - CLI_ID=2
+      - CLI_BATCH_MAX_AMOUNT=20
+    
+    volumes:
+      - type: bind
+        source: ./client/config.yaml
+        target: /config.yaml
+      - type: bind
+        source: ./.data/agency-2.csv
+        target: /agency-2.csv
+        
+    
+    networks:
+      - testing_net
+    depends_on:
+      - server
+
 networks:
   testing_net:
     ipam:
