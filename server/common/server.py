@@ -127,7 +127,7 @@ class Server:
             birthdate=birthdate,
             number=bet_number
         )
-        logging.debug(f"Bet(agency={bet.agency}, first_name={bet.first_name}, last_name={bet.last_name}, document={bet.document}, birthdate={bet.birthdate}, number={bet.number})")
+        #logging.debug(f"Bet(agency={bet.agency}, first_name={bet.first_name}, last_name={bet.last_name}, document={bet.document}, birthdate={bet.birthdate}, number={bet.number})")
 
         
         return bet
