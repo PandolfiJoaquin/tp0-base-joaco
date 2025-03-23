@@ -13,6 +13,7 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.agencies_done = []
+        self.clients_waiting_results = []
 
     def run(self):
         """
@@ -52,18 +53,27 @@ class Server:
                 for bet in batch:
                     utils.store_bets([bet])
                 logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
-                
-                client_sock.settimeout(5)
-                client_sock.sendall(b'\x00') #send ack for batch
-                client_sock.settimeout(None)
+                self.ackear(client_sock)
             
             if t == 3:
                 id = int.from_bytes(recvall(client_sock, 1), "little")
-                logging.info(f"agency {id} done")
-                
-                client_sock.settimeout(5)
-                client_sock.sendall(b'\x00') #send ack for agency Done
-                client_sock.settimeout(None)
+                self.agencies_done.append(id)
+                logging.info(f"agency {id} done. agencies left: { {1, 2} - set(self.agencies_done)}")
+                self.ackear(client_sock)
+                if len(self.agencies_done) == 2:
+                    logging.info(f"all agencies done")
+                    for client_sock in self.clients_waiting_results:
+                        self.__send_results(client_sock)
+                logging.info("action: sorteo | result: success")
+
+            if t == 4:
+                logging.info(f"got a request for results")
+                if len(self.agencies_done) == 2:
+                    self.__send_results(client_sock)
+                else:
+                    self.clients_waiting_results.append(client_sock)
+                    logging.info(f"client added to waiting list")
+
 
 
         except OSError as e:
@@ -72,6 +82,11 @@ class Server:
         finally:
             client_sock.shutdown(socket.SHUT_WR)
             client_sock.close()
+
+    def ackear(self, client_sock):
+        client_sock.settimeout(5)
+        client_sock.sendall(b'\x00')
+        client_sock.settimeout(None)
 
     def __accept_new_connection(self):
         """
@@ -156,6 +171,11 @@ class Server:
 
     def recv_int_2_bytes(self, client_sock):
         return int.from_bytes(recvall(client_sock, 2),"little")
+
+    def __send_results(self, client_sock):
+        pass
+
+
 
 def recvall(skt, n):
     data = bytearray()

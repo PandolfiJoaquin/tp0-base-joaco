@@ -13,7 +13,11 @@ agency_done: 0x03 <agency_n>(1 byte)
 despues de este mensaje, el cliente le escribe al server por los resultados
 
 results: 0x04 <agencey_n>(1 byte)
-response: a definir
+
+response: 
+<amt-of-winners>(2 bytes)
+<dni lenght> (2 bytes)
+<dni> (dni lenght bytes)
 
 
 

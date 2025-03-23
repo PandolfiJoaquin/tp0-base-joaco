@@ -76,7 +76,7 @@ func (c *Client) StartClientLoop() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM)
 
-	go c.sendAll(msgDoneCh, errCh, bets)
+	go c.sendAllBets(msgDoneCh, errCh, bets)
 	select {
 	case <-msgDoneCh:
 		log.Infof("action: send_batch | result: success | client_id: %v", c.config.ID)
@@ -100,35 +100,44 @@ func (c *Client) StartClientLoop() {
 			return
 		}
 	}
-
-	// Wait a time between sending one message and the next one
-
 }
 
-func (c *Client) sendAll(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
+func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
 	dataChan := c.protocolSerializeBets(bets)
 	for dataToSend := range dataChan {
-		err := c.sendData(dataToSend, "batch")
+		err := c.sendData(dataToSend, "batch", true)
 		if err != nil {
 			errCh <- err
 			return
 		}
 	}
 
-	id, _ := strconv.Atoi(c.config.ID)
-	log.Infof("agency done. notifying server")
-	allDoneMsgSerialized := append([]byte{uint8(3)}, uint8(id))
+	allDoneMsgSerialized := c.protocolNotifyAgencyDoneMsg()
 
-	if err := c.sendData(allDoneMsgSerialized, "agency done"); err != nil {
+	if err := c.sendData(allDoneMsgSerialized, "agency done", true); err != nil {
 		errCh <- err
 		return
 	}
+
+	askResults := c.protocolAskResults()
+	if err := c.sendData(askResults, "ask results", false); err != nil {
+		errCh <- err
+		return
+	}
+
 	msgDoneCh <- true
 
 	return
 }
 
-func (c *Client) sendData(dataToSend []byte, ctx string) error {
+func (c *Client) protocolNotifyAgencyDoneMsg() []byte {
+	id, _ := strconv.Atoi(c.config.ID)
+	log.Infof("agency done. notifying server")
+	allDoneMsgSerialized := append([]byte{uint8(3)}, uint8(id))
+	return allDoneMsgSerialized
+}
+
+func (c *Client) sendData(dataToSend []byte, ctx string, waitAckAndClose bool) error {
 	log.Debugf("dataSended: %v", dataToSend)
 	//create socket
 	if err := c.createClientSocket(); err != nil {
@@ -147,6 +156,10 @@ func (c *Client) sendData(dataToSend []byte, ctx string) error {
 			len(dataToSend)-dataSended)
 
 	}
+	if !waitAckAndClose {
+		return nil
+	}
+
 	//receive ack for the batch from the server
 	buff := make([]byte, 1)
 	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
@@ -265,6 +278,13 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 		close(ch)
 	}()
 	return ch
+}
+
+func (c *Client) protocolAskResults() []byte {
+	id, _ := strconv.Atoi(c.config.ID)
+	log.Infof("agency done. notifying server")
+	msg := append([]byte{uint8(4)}, uint8(id))
+	return msg
 }
 
 //func (c *Client) getResults() error {
