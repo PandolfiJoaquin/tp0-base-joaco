@@ -203,6 +203,10 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 		log.Info("ack sended successfully", buff)
 	}
 
+	err := c.conn.Close()
+	if err != nil {
+		errCh <- err
+	}
 	msgDoneCh <- true
 
 	return
