@@ -33,6 +33,9 @@ services:
       - type: bind
         source: ./client/config.yaml
         target: /config.yaml
+      - type: bind
+        source: ./.data/agency-1.csv
+        target: /agency-1.csv
     networks:
       - testing_net
     depends_on:

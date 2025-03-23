@@ -34,8 +34,8 @@ CLIENT_SERVICE='''
         source: ./client/config.yaml
         target: /config.yaml
       - type: bind
-        source: ./.data/dataset.zip
-        target: /dataset.zip 
+        source: ./.data/agency-<client-number>.csv
+        target: /agency-<client-number>.csv
         
     
     networks:

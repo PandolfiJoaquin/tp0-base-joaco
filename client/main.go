@@ -51,21 +51,6 @@ func InitConfig() (*viper.Viper, error) {
 	if v.BindEnv("log", "level") != nil {
 		fmt.Printf("Error loading env var %v.%v", "log", "level")
 	}
-	if v.BindEnv("bet", "name") != nil {
-		fmt.Printf("Error loading env var %v.%v", "bet", "name")
-	}
-	if v.BindEnv("bet", "surname") != nil {
-		fmt.Printf("Error loading env var %v.%v", "bet", "surname")
-	}
-	if v.BindEnv("bet", "dni") != nil {
-		fmt.Printf("Error loading env var %v.%v", "bet", "dni")
-	}
-	if v.BindEnv("bet", "birthdate") != nil {
-		fmt.Printf("Error loading env var %v.%v", "bet", "birthdate")
-	}
-	if v.BindEnv("bet", "number") != nil {
-		fmt.Printf("Error loading env var %v.%v", "bet", "number")
-	}
 
 	// Try to read configuration from config file. If config file
 	// does not exist then ReadInConfig will fail but configuration
@@ -139,15 +124,6 @@ func main() {
 		LoopPeriod:    v.GetDuration("loop.period"),
 	}
 
-	bet := common.Bet{
-		Name:      v.GetString("bet.name"),
-		Surname:   v.GetString("bet.surname"),
-		Dni:       v.GetString("bet.dni"),
-		BirthDate: v.GetString("bet.birthdate"),
-		Number:    v.GetString("bet.number"),
-		Agency:    v.GetString("agency"),
-	}
-
-	client := common.NewClient(clientConfig, bet)
+	client := common.NewClient(clientConfig)
 	client.StartClientLoop()
 }

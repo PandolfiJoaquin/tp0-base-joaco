@@ -3,6 +3,8 @@ package common
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/csv"
+	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -25,7 +27,6 @@ type ClientConfig struct {
 // Client Entity that encapsulates how
 type Client struct {
 	config ClientConfig
-	bet    Bet
 	conn   net.Conn
 }
 
@@ -40,10 +41,9 @@ type Bet struct {
 
 // NewClient Initializes a new client receiving the configuration
 // as a parameter
-func NewClient(config ClientConfig, bet Bet) *Client {
+func NewClient(config ClientConfig) *Client {
 	client := &Client{
 		config: config,
-		bet:    bet,
 	}
 	return client
 }
@@ -68,40 +68,40 @@ func (c *Client) createClientSocket() error {
 func (c *Client) StartClientLoop() {
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
-	for msgID := 1; msgID <= c.config.LoopAmount; msgID++ {
 
-		msgDoneCh := make(chan bool)
-		errCh := make(chan error)
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, syscall.SIGTERM)
+	bets := c.loadBets()
 
-		go c.sendAndReadResponse(msgDoneCh, errCh, c.bet)
-		select {
-		case <-msgDoneCh:
-			break
-		case err := <-errCh:
-			log.Infof("error received")
-			if err != nil {
-				log.Errorf("action: receive_message | result: fail | client_id: %v | error: %v",
-					c.config.ID,
-					err,
-				)
-			}
-			break
-		case sig := <-sigChan:
-			log.Debugf("action: receive_message | client_id: %v | signal received: %v", c.config.ID, sig)
-			if sig == syscall.SIGTERM {
-				log.Infof("action: receive_message | result: fail | client_id: %v | signal: %v",
-					c.config.ID,
-					sig,
-				)
-				return
-			}
+	msgDoneCh := make(chan bool)
+	errCh := make(chan error)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGTERM)
+
+	go c.sendAndReadResponse(msgDoneCh, errCh, bets[0])
+	select {
+	case <-msgDoneCh:
+		break
+	case err := <-errCh:
+		log.Infof("error received")
+		if err != nil {
+			log.Errorf("action: receive_message | result: fail | client_id: %v | error: %v",
+				c.config.ID,
+				err,
+			)
 		}
-
-		// Wait a time between sending one message and the next one
-
+		break
+	case sig := <-sigChan:
+		log.Debugf("action: receive_message | client_id: %v | signal received: %v", c.config.ID, sig)
+		if sig == syscall.SIGTERM {
+			log.Infof("action: receive_message | result: fail | client_id: %v | signal: %v",
+				c.config.ID,
+				sig,
+			)
+			return
+		}
 	}
+
+	// Wait a time between sending one message and the next one
+
 }
 
 func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
@@ -168,6 +168,38 @@ func (c *Client) protocolSerializeBet(bet Bet) []byte {
 
 	return buf.Bytes()
 
+}
+
+func (c *Client) loadBets() []Bet {
+	file, err := os.Open(fmt.Sprintf("agency-%v.csv", c.config.ID))
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	bets := make([]Bet, 0)
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+			panic(err)
+		}
+		bets = append(bets, Bet{
+			Name:      record[0],
+			Surname:   record[1],
+			Dni:       record[2],
+			BirthDate: record[3],
+			Number:    record[4],
+			Agency:    c.config.ID,
+		})
+
+		// Process the record (a []string)
+
+	}
+	return bets
 }
 
 func protocolEncodeString(buf *bytes.Buffer, s string) {
