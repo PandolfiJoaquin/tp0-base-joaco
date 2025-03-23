@@ -36,11 +36,15 @@ class Server:
         client socket will also be closed
         """
         try:
-            bet = self.__recv_bet(client_sock)
+            batch = self.__recv_batch(client_sock)
+            
             addr = client_sock.getpeername()
-            #logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {bet}')
-            utils.store_bets([bet])
-            logging.info(f"action: apuesta_almacenada | result: success | dni: {bet.document} | numero: {bet.number}")
+            logging.info(f"action: recieve_batch | result: success | amt of bets: {len(batch)}")
+            
+            for bet in batch:
+                utils.store_bets([bet])
+
+            
             client_sock.settimeout(5)
             client_sock.sendall(b'\x00')
 
@@ -71,18 +75,37 @@ class Server:
         exit(0)
 
 
+    def __recv_batch(self, client_sock):
+        t_raw = recvall(client_sock, 1)
+        logging.debug(f"t_raw {t_raw}")
+        t = int.from_bytes(t_raw, "little")
+        if t != 2:
+            logging.info(f"batches are not being used. {t}")
+            return [self.__recv_bet(client_sock)]
+        batch = []
+        amt_of_bets = self.recv_int_2_bytes(client_sock)
+        logging.debug(f"{amt_of_bets}")
+        for i in range(amt_of_bets):
+            batch.append(self.__recv_bet(client_sock))
+            logging.info(f"received {i+1}/{4} bets")
+        
+        logging.info(f"all bets have been received")
+        
+        return batch
+
     def __recv_bet(self, client_sock):
         msg_code = client_sock.recv(1)[0]
         if msg_code != 1:
+            logging.info(f"invalid bet recv: {msg_code}")
             return "Invalid msg"
+    
         
-        name = self.__recv_string(client_sock)
-        surname = self.__recv_string(client_sock)
-        dni = self.__recv_string(client_sock)
+        name = self.__recv_string(client_sock, ctx="name")
+        surname = self.__recv_string(client_sock, ctx="surname")
+        dni = self.__recv_string(client_sock, ctx="dni")
         birthdate = self.__recv_string(client_sock, ctx="birthdate")
         bet_number = self.__recv_string(client_sock, ctx="bet_number")
         agency = self.__recv_string(client_sock, ctx="agency")
-        logging.debug("creating bet")
         bet = utils.Bet(
             agency=agency,
             first_name=name,
@@ -91,20 +114,25 @@ class Server:
             birthdate=birthdate,
             number=bet_number
         )
-        logging.debug("returning bet")
+        logging.debug(f"Bet(agency={bet.agency}, first_name={bet.first_name}, last_name={bet.last_name}, document={bet.document}, birthdate={bet.birthdate}, number={bet.number})")
+
+        
         return bet
         
 
-    def __recv_int(self, client_sock):
+    def __recv_int_one_byte(self, client_sock):
         return int.from_bytes(recvall(client_sock, 8), "little")
     
     def __recv_string(self, client_sock, ctx=None):
         suffix = f"| ctx: {ctx}" if ctx is not None else ""
-        l = int.from_bytes(recvall(client_sock, 2),"little")
-        logging.debug(f"now readingd {l} bytes" + suffix)
+        l = self.recv_int_2_bytes(client_sock)
+        #logging.debug(f"now readingd {l} bytes" + suffix)
         d = recvall(client_sock, l).decode('utf-8')
-        logging.debug(f"content: {d}" + suffix)
+        #logging.debug(f"content: {d}" + suffix)
         return d
+
+    def recv_int_2_bytes(self, client_sock):
+        return int.from_bytes(recvall(client_sock, 2),"little")
 
 def recvall(skt, n):
     data = bytearray()

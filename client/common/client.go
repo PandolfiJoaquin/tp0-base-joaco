@@ -66,8 +66,6 @@ func (c *Client) createClientSocket() error {
 
 // StartClientLoop Send messages to the client until some time threshold is met
 func (c *Client) StartClientLoop() {
-	// There is an autoincremental msgID to identify every message sent
-	// Messages if the message amount threshold has not been surpassed
 
 	bets := c.loadBets()
 
@@ -76,9 +74,10 @@ func (c *Client) StartClientLoop() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM)
 
-	go c.sendAndReadResponse(msgDoneCh, errCh, bets[0])
+	go c.sendAllBets(msgDoneCh, errCh, bets)
 	select {
 	case <-msgDoneCh:
+		log.Infof("action: send_batch | result: success | client_id: %v", c.config.ID)
 		break
 	case err := <-errCh:
 		log.Infof("error received")
@@ -104,27 +103,26 @@ func (c *Client) StartClientLoop() {
 
 }
 
-func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, bet Bet) {
+func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
 	if err := c.createClientSocket(); err != nil {
 		errCh <- err
 		return
 	}
-
-	// TODO: Modify the send to avoid short-write
-	log.Infof("unserialize bet: %v", bet)
-	dataToSend := c.protocolSerializeBet(bet)
-	dataSended := 0
-	log.Debug(len(dataToSend))
-	for dataSended < len(dataToSend) {
-		n, err := c.conn.Write(dataToSend)
-		if err != nil {
-			errCh <- err
-			return
+	dataChan := c.protocolSerializeBets(bets)
+	for dataToSend := range dataChan {
+		log.Debugf("dataSended: %v", dataToSend)
+		dataSended := 0
+		for dataSended < len(dataToSend) {
+			n, err := c.conn.Write(dataToSend)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			dataSended += n
+			log.Debugf("sended: %v bytes. data left: %v bytes",
+				n,
+				len(dataToSend)-dataSended)
 		}
-		dataSended += n
-		log.Debugf("sended: %v bytes. data left: %v bytes",
-			n,
-			len(dataToSend)-dataSended)
 	}
 	buff := make([]byte, 1)
 	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
@@ -139,7 +137,7 @@ func (c *Client) sendAndReadResponse(msgDoneCh chan<- bool, errCh chan<- error, 
 		}
 		n += i
 	}
-	log.Infof("action: apuesta_enviada | result: success | dni: %v | numero: %v", bet.Dni, bet.Number)
+
 	time.Sleep(c.config.LoopPeriod)
 
 	msgDoneCh <- true
@@ -200,6 +198,45 @@ func (c *Client) loadBets() []Bet {
 
 	}
 	return bets
+}
+
+// for 2 bytes (uint16) integers
+func lengthToBytes(length int) []byte {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.LittleEndian, uint16(length))
+	return buf.Bytes()
+}
+
+func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
+	ch := make(chan []byte)
+	go func() {
+		buf := new(bytes.Buffer)
+		binary.Write(buf, binary.LittleEndian, uint8(2))
+		t := buf.Bytes()
+		betsInBatch := 0
+		payload := make([]byte, 0)
+		for _, bet := range bets {
+			//type length (amount of bets being send) payload (bet1bet2bet3)
+
+			if len(t)+2+len(payload) > 8000 && betsInBatch > 20 /*maxAmount*/ {
+				log.Debugf("t: %v, l: %v, payload: %v", len(t), betsInBatch, len(payload))
+				log.Debugf("Batch full. sending batch with %v bets", betsInBatch)
+				ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)
+				betsInBatch = 0
+				payload = make([]byte, 0)
+
+			}
+			betBytes := c.protocolSerializeBet(bet)
+			payload = append(payload, betBytes...)
+			betsInBatch += 1
+		}
+		if len(payload) > 0 {
+			log.Debugf("sending last batch with %v bets", betsInBatch)
+			ch <- append(append(t, lengthToBytes(betsInBatch)...), payload...)
+		}
+		close(ch)
+	}()
+	return ch
 }
 
 func protocolEncodeString(buf *bytes.Buffer, s string) {
