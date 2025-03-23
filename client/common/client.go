@@ -183,6 +183,26 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			len(allDoneMsgSerialized)-dataSended)
 	}
 
+	//recv ack from agency done
+	buff := make([]byte, 1)
+	if err := c.conn.SetReadDeadline(time.Now().Add(1 * time.Second)); err != nil {
+		errCh <- err
+	}
+	n := 0
+	for n < 1 {
+		i, err := c.conn.Read(buff)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		n += i
+	}
+	if buff[0] != 0 {
+		log.Errorf("Error sending agency done. Server response: %v", buff)
+	} else {
+		log.Info("ack sended successfully", buff)
+	}
+
 	msgDoneCh <- true
 
 	return
