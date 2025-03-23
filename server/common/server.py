@@ -3,6 +3,8 @@ import logging
 import signal
 import common.utils as utils
 
+from common.utils import load_bets
+
 
 class Server:
     def __init__(self, port, listen_backlog):
@@ -13,7 +15,6 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.agencies_done = []
-        self.clients_waiting_results = []
 
     def run(self):
         """
@@ -58,21 +59,18 @@ class Server:
             if t == 3:
                 id = int.from_bytes(recvall(client_sock, 1), "little")
                 self.agencies_done.append(id)
-                logging.info(f"agency {id} done. agencies left: { {1, 2} - set(self.agencies_done)}")
+                logging.info(f"agency {id} done. agencies left: { {1} - set(self.agencies_done)}")
                 self.ackear(client_sock)
-                if len(self.agencies_done) == 2:
+                if len(self.agencies_done) == 1:
                     logging.info(f"all agencies done")
-                    for client_sock in self.clients_waiting_results:
-                        self.__send_results(client_sock)
                 logging.info("action: sorteo | result: success")
 
             if t == 4:
-                logging.info(f"got a request for results")
-                if len(self.agencies_done) == 2:
-                    self.__send_results(client_sock)
+                id = int.from_bytes(recvall(client_sock, 1), "little")
+                if len(self.agencies_done) != 1:
+                    self.__respond_pending(client_sock)
                 else:
-                    self.clients_waiting_results.append(client_sock)
-                    logging.info(f"client added to waiting list")
+                    self.__send_results(client_sock, id)
 
 
 
@@ -172,9 +170,37 @@ class Server:
     def recv_int_2_bytes(self, client_sock):
         return int.from_bytes(recvall(client_sock, 2),"little")
 
-    def __send_results(self, client_sock):
-        pass
+    def __send_results(self, client_sock, agency_id):
+        
+        #receive the agency
+    
+        #get the results
+        winnersForAgency = self.__get_results(agency_id)
+        #send the results
+        amt_of_winners = len(winnersForAgency)
+        logging.info(f"sending the amount of winners")
+        client_sock.sendall(amt_of_winners.to_bytes(1, "little"))
+        for bet in winnersForAgency:
+            logging.info(f"sending bet")
+            self.__send_string(client_sock, str(bet.document))
 
+    def __get_results(self, agency):
+        logging.debug("getting bets")
+        return [bet for bet in utils.load_bets() if utils.has_won(bet)]
+        
+
+    def __send_string(self, client_sock, string):
+        l = len(string)
+        client_sock.sendall(l.to_bytes(2, "little"))
+        client_sock.sendall(string.encode('utf-8'))
+
+    def __respond_pending(self, client_sock):
+        logging.debug("results are not ready yet. waiting for agency")
+        agency = self.__recv_int_one_byte(client_sock)
+        logging.debug(f"responding results not done to {agency}")
+        self.ackear(client_sock)
+        logging.debug("client notified about delay")
+        
 
 
 def recvall(skt, n):

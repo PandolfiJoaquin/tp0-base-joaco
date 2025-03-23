@@ -120,10 +120,57 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 	}
 
 	askResults := c.protocolAskResults()
-	if err := c.sendData(askResults, "ask results", false); err != nil {
-		errCh <- err
-		return
+	for {
+		log.Infof("creating socket")
+		if err := c.createClientSocket(); err != nil {
+			errCh <- err
+			return
+		}
+		//ask for data
+		log.Infof("asking for data")
+		sended := 0
+		for sended < len(askResults) {
+			n, err := c.conn.Write(askResults)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			sended += n
+		}
+		log.Infof("receiving data")
+		//receive data
+		buff := make([]byte, 1)
+		j := 0
+		for j < 1 {
+			i, err := c.conn.Read(buff)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			j += i
+		}
+		log.Infof("data received: %v", buff)
+		if buff[0] == 0 {
+			log.Infof("results are not ready yet")
+			if err := c.conn.Close(); err != nil {
+				errCh <- err
+				return
+			}
+			time.Sleep(c.config.LoopPeriod)
+			continue
+		}
+		log.Infof("results are ready")
+		log.Infof("winners to receive: %v", buff[0])
+		results, err := c.getResults(buff[0])
+		if err != nil {
+			errCh <- err
+			return
+		}
+		log.Infof("results: %v", results)
+		break
 	}
+
+	//implement the other side of the protocol in server.py
 
 	msgDoneCh <- true
 
@@ -285,6 +332,47 @@ func (c *Client) protocolAskResults() []byte {
 	log.Infof("agency done. notifying server")
 	msg := append([]byte{uint8(4)}, uint8(id))
 	return msg
+}
+
+func (c *Client) getResults(amtOfWinners uint8) ([]string, error) {
+	result := make([]string, 0)
+	for i := uint8(0); i < amtOfWinners; i++ {
+		//read a 2 bytes number
+		lRaw := make([]byte, 2)
+		j := 0
+		for j < 2 {
+			i, err := c.conn.Read(lRaw)
+			if err != nil {
+				log.Errorf("error lenght")
+				return nil, nil
+			}
+			j += i
+		}
+		l := binary.LittleEndian.Uint16(lRaw)
+		//read the string
+		dni, err := c.readString(l)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, dni)
+
+	}
+	return result, nil
+}
+
+func (c *Client) readString(l uint16) (string, error) { //read a string of length l
+	buff := make([]byte, l)
+	j := 0
+	for j < int(l) {
+		i, err := c.conn.Read(buff)
+		if err != nil {
+			log.Errorf("error reading string")
+			return "", err
+		}
+		j += i
+	}
+	return string(buff), nil
+
 }
 
 //func (c *Client) getResults() error {

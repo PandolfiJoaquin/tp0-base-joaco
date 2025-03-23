@@ -15,7 +15,7 @@ despues de este mensaje, el cliente le escribe al server por los resultados
 results: 0x04 <agencey_n>(1 byte)
 
 response: 
-<amt-of-winners>(2 bytes)
+<amt-of-winners>(1 byte)
 <dni lenght> (2 bytes)
 <dni> (dni lenght bytes)
 
