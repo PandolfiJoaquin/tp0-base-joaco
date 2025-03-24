@@ -13,6 +13,7 @@ SERVER_SERVICE='''
     entrypoint: python3 /main.py
     environment:
       - PYTHONUNBUFFERED=1
+      - SERVER_CLIENT_AMOUNT=<amount-of-clients>
     networks:
       - testing_net
     volumes:
@@ -65,8 +66,9 @@ def main(args):
         amtOfClients = int(args[0])
     except ValueError:
         print("amount of clients should be alphanumeric")
+        return
     
-    dockerFile = HEADER + SERVER_SERVICE
+    dockerFile = HEADER + SERVER_SERVICE.replace("<amount-of-clients>", str(amtOfClients))
     dockerFile += '\n'.join([CLIENT_SERVICE.replace('<client-number>', str(i+1)) for i in range(amtOfClients) ])
     dockerFile += NETWORKS
 
