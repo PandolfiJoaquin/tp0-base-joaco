@@ -1,33 +1,6 @@
 # Resolucion
 
-## Ej7
-
-Una vez mas para este ejercicio defino un protocolo entre los clientes y el servidor. 
-A diferencia del anterior no trabaja sobre lo ya construido por lo que se simplifica 
-un poco todo
-
-### Protocolo
-
-agency_done: 0x03 <agency_n>(1 byte)
-
-despues de este mensaje, el cliente le escribe al server por los resultados
-
-results: 0x04 <agencey_n>(1 byte)
-
-response: 
-<amt-of-winners>(1 byte)
-<dni lenght> (2 bytes)
-<dni> (dni lenght bytes)
-
-si no hubo ningun ganador, el indicar 0 dnis chocaria con el mensaje de que todavia
-no estan los resultados. esto fue contemplado recien al final y se decidio resolver
-modificando ese caso particular para que se envie un string indicando que no hay nada
-en lugar de no mandar ningun dni. A futuro queda el aprendizaje de no ahorrar el tipo de dato
-de un mensaje por mas que parezca que no se va a usar y de este tp durar tener mas modificaciones
-de protocolo en ejercicios siguientes, se modificaria ahora para evitar problemas a futuro
-
-
-
+## Ej8
 
 
 
