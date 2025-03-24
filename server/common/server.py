@@ -15,7 +15,7 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.agencies_done = []
-        self.clients = 2
+        self.clients = 5
 
     def run(self):
         """
@@ -54,7 +54,7 @@ class Server:
                     return
                 for bet in batch:
                     utils.store_bets([bet])
-                #logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
+                logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
                 self.ackear(client_sock)
             
             if t == 3: #agency done sending bets
@@ -173,16 +173,24 @@ class Server:
         #get the results
         winnersForAgency = self.__get_results(agency_id)
         #send the results
+        if len(winnersForAgency) == 0:
+            winnersForAgency = ["no-winner-on-this-agency"]
         amt_of_winners = len(winnersForAgency)
+        
         logging.info(f"sending the amount of winners")
         client_sock.sendall(amt_of_winners.to_bytes(1, "little"))
+        if winnersForAgency[0] == "no-winner-on-this-agency":
+            self.__send_string(client_sock, winnersForAgency[0])
+            logging.info(f"sending that there is no winner")
+            return
         for bet in winnersForAgency:
             logging.info(f"sending dni of winner")
             self.__send_string(client_sock, str(bet.document))
 
     def __get_results(self, agency):
         logging.debug("getting bets")
-        return [bet for bet in utils.load_bets() if utils.has_won(bet)]
+        return [bet for bet in utils.load_bets() 
+                if utils.has_won(bet) and bet.agency == agency]
         
 
     def __send_string(self, client_sock, string):
