@@ -19,6 +19,15 @@ response:
 <dni lenght> (2 bytes)
 <dni> (dni lenght bytes)
 
+si no hubo ningun ganador, el indicar 0 dnis chocaria con el mensaje de que todavia
+no estan los resultados. esto fue contemplado recien al final y se decidio resolver
+modificando ese caso particular para que se envie un string indicando que no hay nada
+en lugar de no mandar ningun dni. A futuro queda el aprendizaje de no ahorrar el tipo de dato
+de un mensaje por mas que parezca que no se va a usar y de este tp durar tener mas modificaciones
+de protocolo en ejercicios siguientes, se modificaria ahora para evitar problemas a futuro
+
+
+
 
 
 
