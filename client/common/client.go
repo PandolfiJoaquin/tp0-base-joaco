@@ -127,7 +127,7 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			return
 		}
 		//ask for data
-		log.Infof("asking for data")
+		log.Infof("asking for data with msg: %v", askResults)
 		sended := 0
 		for sended < len(askResults) {
 			n, err := c.conn.Write(askResults)
@@ -142,6 +142,7 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 		buff := make([]byte, 1)
 		j := 0
 		for j < 1 {
+
 			i, err := c.conn.Read(buff)
 			if err != nil {
 				errCh <- err
@@ -185,7 +186,6 @@ func (c *Client) protocolNotifyAgencyDoneMsg() []byte {
 }
 
 func (c *Client) sendData(dataToSend []byte, ctx string, waitAckAndClose bool) error {
-	log.Debugf("dataSended: %v", dataToSend)
 	//create socket
 	if err := c.createClientSocket(); err != nil {
 		return err
@@ -198,10 +198,6 @@ func (c *Client) sendData(dataToSend []byte, ctx string, waitAckAndClose bool) e
 			return err
 		}
 		dataSended += n
-		log.Debugf("sended: %v bytes. data left: %v bytes",
-			n,
-			len(dataToSend)-dataSended)
-
 	}
 	if !waitAckAndClose {
 		return nil
@@ -222,9 +218,9 @@ func (c *Client) sendData(dataToSend []byte, ctx string, waitAckAndClose bool) e
 	}
 	if buff[0] != 0 {
 		log.Errorf("Error sending %v. Server response: %v", ctx, buff)
-	} else {
+	} /*else {
 		log.Debugf("data for %v successfully", ctx)
-	}
+	}*/
 
 	if err := c.conn.Close(); err != nil {
 		log.Errorf("action: close connection | result: failed | client_id: %v | msg: %v",

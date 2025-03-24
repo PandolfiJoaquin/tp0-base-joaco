@@ -15,6 +15,7 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.agencies_done = []
+        self.clients = 2
 
     def run(self):
         """
@@ -47,30 +48,33 @@ class Server:
             if t == 1:
                 logging.info(f"got a bet instead of a batch")
 
-            if t == 2:
+            if t == 2: #batch of bets
                 batch = self.__recv_batch(client_sock,t)
                 if len(batch) == 0:
                     return
                 for bet in batch:
                     utils.store_bets([bet])
-                logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
+                #logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(batch)}")
                 self.ackear(client_sock)
             
-            if t == 3:
+            if t == 3: #agency done sending bets
+                if len(self.agencies_done) == self.clients:
+                    raise RuntimeError("received too many agencies done messages")
+                
                 id = int.from_bytes(recvall(client_sock, 1), "little")
                 self.agencies_done.append(id)
-                logging.info(f"agency {id} done. agencies left: { {1} - set(self.agencies_done)}")
+                logging.info(f"agency {id} done. agencies left: { set([i+1 for i in range(self.clients)]) - set(self.agencies_done)}")
                 self.ackear(client_sock)
-                if len(self.agencies_done) == 1:
+                if len(self.agencies_done) == self.clients:
                     logging.info(f"all agencies done")
                 logging.info("action: sorteo | result: success")
 
             if t == 4:
-                id = int.from_bytes(recvall(client_sock, 1), "little")
-                if len(self.agencies_done) != 1:
-                    self.__respond_pending(client_sock)
+                agency_id = int.from_bytes(recvall(client_sock, 1), "little")
+                if len(self.agencies_done) != self.clients:
+                    self.__respond_pending(client_sock, agency_id)
                 else:
-                    self.__send_results(client_sock, id)
+                    self.__send_results(client_sock, agency_id)
 
 
 
@@ -113,14 +117,10 @@ class Server:
             return [self.__recv_bet(client_sock)]
         batch = []
         amt_of_bets = self.recv_int_2_bytes(client_sock)
-        logging.debug(f"amt_of_bets in batch: {amt_of_bets}")
         try:
             for i in range(amt_of_bets):
                 batch.append(self.__recv_bet(client_sock))
-                logging.info(f"received {i+1}/{amt_of_bets} bets")
-            
-            logging.info(f"all bets have been received")
-            
+
             return batch
         except:
             self.__send_batch_fail_msg(client_sock)
@@ -150,8 +150,6 @@ class Server:
             birthdate=birthdate,
             number=bet_number
         )
-        #logging.debug(f"Bet(agency={bet.agency}, first_name={bet.first_name}, last_name={bet.last_name}, document={bet.document}, birthdate={bet.birthdate}, number={bet.number})")
-
         
         return bet
         
@@ -162,9 +160,7 @@ class Server:
     def __recv_string(self, client_sock, ctx=None):
         suffix = f"| ctx: {ctx}" if ctx is not None else ""
         l = self.recv_int_2_bytes(client_sock)
-        #logging.debug(f"now readingd {l} bytes" + suffix)
         d = recvall(client_sock, l).decode('utf-8')
-        #logging.debug(f"content: {d}" + suffix)
         return d
 
     def recv_int_2_bytes(self, client_sock):
@@ -181,7 +177,7 @@ class Server:
         logging.info(f"sending the amount of winners")
         client_sock.sendall(amt_of_winners.to_bytes(1, "little"))
         for bet in winnersForAgency:
-            logging.info(f"sending bet")
+            logging.info(f"sending dni of winner")
             self.__send_string(client_sock, str(bet.document))
 
     def __get_results(self, agency):
@@ -194,10 +190,10 @@ class Server:
         client_sock.sendall(l.to_bytes(2, "little"))
         client_sock.sendall(string.encode('utf-8'))
 
-    def __respond_pending(self, client_sock):
+    def __respond_pending(self, client_sock, agency_id):
         logging.debug("results are not ready yet. waiting for agency")
-        agency = self.__recv_int_one_byte(client_sock)
-        logging.debug(f"responding results not done to {agency}")
+        logging.debug("reading agency info")
+        logging.debug(f"responding results not done to {agency_id}")
         self.ackear(client_sock)
         logging.debug("client notified about delay")
         
