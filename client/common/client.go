@@ -167,7 +167,11 @@ func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []B
 			errCh <- err
 			return
 		}
-		log.Infof("results: %v", results)
+		cantGanadores := len(results)
+		if results[0] == "no-winner-on-this-agency" {
+			cantGanadores = 0
+		}
+		log.Infof("action: consulta_ganadores | result: success | cant_ganadores: %v", cantGanadores)
 		break
 	}
 
