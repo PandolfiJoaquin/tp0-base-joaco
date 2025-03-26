@@ -25,10 +25,12 @@ class Server:
 
         self.running = True
         while self.running:
-            
-            client_sock = self.__accept_new_connection()
-            self.skt = client_sock
-            self.__handle_client_connection(client_sock)
+            try:
+                client_sock = self.__accept_new_connection()
+                self.skt = client_sock
+                self.__handle_client_connection(client_sock)
+            except OSError as e:
+                logging.error(f"action: accept_connections | result: fail | error: {e}")
 
     def __handle_client_connection(self, client_sock):
         """
@@ -62,6 +64,7 @@ class Server:
         return c
 
     def __sigterm_handler(self, sig, frame):
+        self.running = False
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
         if self.skt is not None:
@@ -69,4 +72,3 @@ class Server:
             self.skt.close()
 
 
-        self.running = False
