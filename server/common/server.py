@@ -64,11 +64,14 @@ class Server:
         return c
 
     def __sigterm_handler(self, sig, frame):
+        logging.debug("closing sockets")
         self.running = False
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
         if self.skt is not None:
             self.skt.shutdown(socket.SHUT_RDWR)
             self.skt.close()
+
+        logging.debug("sockets closed")
 
 
