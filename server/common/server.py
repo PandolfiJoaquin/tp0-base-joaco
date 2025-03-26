@@ -12,21 +12,27 @@ class Server:
         signal.signal(signal.SIGINT, self.__sigterm_handler)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
+        self.skt = None
+        self.running = False
 
     def run(self):
-        """
-        Dummy Server loop
+        def run(self):
+            """
+            Dummy Server loop
 
-        Server that accept a new connections and establishes a
-        communication with a client. After client with communucation
-        finishes, servers starts to accept new connections again
-        """
+            Server that accept a new connections and establishes a
+            communication with a client. After client with communucation
+            finishes, servers starts to accept new connections again
+            """
 
         self.running = True
         while self.running:
-            
-            client_sock = self.__accept_new_connection()
-            self.__handle_client_connection(client_sock)
+            try:
+                client_sock = self.__accept_new_connection()
+                self.skt = client_sock
+                self.__handle_client_connection(client_sock)
+            except OSError as e:
+                logging.error(f"action: accept_connections | result: fail | error: {e}")
 
     def __handle_client_connection(self, client_sock):
         """
@@ -46,9 +52,6 @@ class Server:
 
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
-        finally:
-            client_sock.shutdown(socket.SHUT_WR)
-            client_sock.close()
 
     def __accept_new_connection(self):
         """
@@ -64,12 +67,17 @@ class Server:
         logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
         return c
 
+
     def __sigterm_handler(self, sig, frame):
+        logging.debug("closing sockets")
+        self.running = False
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
-        self.running = False
-        exit(0)
+        if self.skt is not None:
+            self.skt.shutdown(socket.SHUT_RDWR)
+            self.skt.close()
 
+        logging.debug("sockets closed")
 
     def __recv_bet(self, client_sock):
         msg_code = client_sock.recv(1)[0]
