@@ -64,8 +64,10 @@ class Server:
     def __sigterm_handler(self, sig, frame):
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
-        self.skt.shutdown(socket.SHUT_RDWR)
-        self.skt.close()
+        if self.skt is not None:
+            self.skt.shutdown(socket.SHUT_RDWR)
+            self.skt.close()
+
 
         self.running = False
         exit(0)
