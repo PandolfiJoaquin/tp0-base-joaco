@@ -70,4 +70,3 @@ class Server:
 
 
         self.running = False
-        exit(0)
