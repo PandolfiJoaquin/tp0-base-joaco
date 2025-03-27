@@ -16,13 +16,9 @@ def recv_int_one_byte(client_sock):
     return int.from_bytes(recvall(client_sock, 8), "little")
 
 
-def send_results(client_sock, agency_id):
+def send_results(client_sock, agency_id, winnersForAgency):
 
     #get the results
-    winnersForAgency = get_results(agency_id)
-    #send the results
-    if len(winnersForAgency) == 0:
-        winnersForAgency = ["no-winner-on-this-agency"]
     amt_of_winners = len(winnersForAgency)
 
     logging.info(f"sending the amount of winners")

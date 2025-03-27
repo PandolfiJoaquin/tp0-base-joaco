@@ -109,7 +109,12 @@ class Server:
                 if amt_of_agencies_done != self.clients:
                     respond_pending(client_sock, agency_id)
                 else:
-                    send_results(client_sock, agency_id)
+                    winnersForAgency = []
+                    with file_lock:
+                        winnersForAgency = get_results(agency_id)
+                    if len(winnersForAgency) == 0:
+                        winnersForAgency = ["no-winner-on-this-agency"]
+                    send_results(client_sock, agency_id, winnersForAgency)
 
 
 
