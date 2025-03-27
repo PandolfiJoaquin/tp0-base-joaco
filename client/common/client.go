@@ -69,14 +69,14 @@ func (c *Client) createClientSocket() error {
 // StartClientLoop Send messages to the client until some time threshold is met
 func (c *Client) StartClientLoop() {
 
-	bets := c.loadBets()
+	betsCh := c.loadBets()
 
 	msgDoneCh := make(chan bool)
 	errCh := make(chan error)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM)
 
-	go c.sendAllBets(msgDoneCh, errCh, bets)
+	go c.sendAllBets(msgDoneCh, errCh, betsCh)
 	select {
 	case <-msgDoneCh:
 		log.Infof("action: send_batch | result: success | client_id: %v", c.config.ID)
@@ -102,7 +102,7 @@ func (c *Client) StartClientLoop() {
 	}
 }
 
-func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets []Bet) {
+func (c *Client) sendAllBets(msgDoneCh chan<- bool, errCh chan<- error, bets chan Bet) {
 	dataChan := c.protocolSerializeBets(bets)
 	for dataToSend := range dataChan {
 		err := c.sendData(dataToSend, "batch", true)
@@ -252,36 +252,36 @@ func (c *Client) protocolSerializeBet(bet Bet) []byte {
 
 }
 
-func (c *Client) loadBets() []Bet {
-	file, err := os.Open(fmt.Sprintf("agency-%v.csv", c.config.ID))
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	bets := make([]Bet, 0)
-	for {
-		record, err := reader.Read()
+func (c *Client) loadBets() chan Bet {
+	ch := make(chan Bet)
+	go func(ch chan Bet) {
+		file, err := os.Open(fmt.Sprintf("agency-%v.csv", c.config.ID))
 		if err != nil {
-			if err.Error() == "EOF" {
-				break
-			}
 			panic(err)
 		}
-		bets = append(bets, Bet{
-			Name:      record[0],
-			Surname:   record[1],
-			Dni:       record[2],
-			BirthDate: record[3],
-			Number:    record[4],
-			Agency:    c.config.ID,
-		})
+		defer file.Close()
 
-		// Process the record (a []string)
-
-	}
-	return bets
+		reader := csv.NewReader(file)
+		for {
+			record, err := reader.Read()
+			if err != nil {
+				if err.Error() == "EOF" {
+					break
+				}
+				panic(err)
+			}
+			ch <- Bet{
+				Name:      record[0],
+				Surname:   record[1],
+				Dni:       record[2],
+				BirthDate: record[3],
+				Number:    record[4],
+				Agency:    c.config.ID,
+			}
+		}
+		close(ch)
+	}(ch)
+	return ch
 }
 
 // for 2 bytes (uint16) integers
@@ -291,7 +291,7 @@ func lengthToBytes(length int) []byte {
 	return buf.Bytes()
 }
 
-func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
+func (c *Client) protocolSerializeBets(bets chan Bet) chan []byte {
 	ch := make(chan []byte)
 	go func() {
 		buf := new(bytes.Buffer)
@@ -299,7 +299,7 @@ func (c *Client) protocolSerializeBets(bets []Bet) chan []byte {
 		t := buf.Bytes()
 		betsInBatch := 0
 		payload := make([]byte, 0)
-		for _, bet := range bets {
+		for bet := range bets {
 			//type length (amount of bets being send) payload (bet1bet2bet3)
 
 			if len(t)+2+len(payload) > 8000 || betsInBatch >= c.config.MaxBetsPerBatch {
