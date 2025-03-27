@@ -12,6 +12,8 @@ class Server:
         signal.signal(signal.SIGINT, self.__sigterm_handler)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
+        self.running = False
+        self.skt = None
 
     def run(self):
         """
@@ -24,9 +26,11 @@ class Server:
 
         self.running = True
         while self.running:
-            
-            client_sock = self.__accept_new_connection()
-            self.__handle_client_connection(client_sock)
+            try:
+                client_sock = self.__accept_new_connection()
+                self.__handle_client_connection(client_sock)
+            except OSError as e:
+                logging.error(f"action: accept_connections | result: fail | error: {e}")
 
     def __handle_client_connection(self, client_sock):
         """
@@ -58,10 +62,7 @@ class Server:
 
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
-            
-        finally:
-            client_sock.shutdown(socket.SHUT_WR)
-            client_sock.close()
+
 
     def __accept_new_connection(self):
         """
@@ -78,10 +79,12 @@ class Server:
         return c
 
     def __sigterm_handler(self, sig, frame):
+        self.running = False
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
-        self.running = False
-        exit(0)
+        if self.skt is not None:
+            self.skt.shutdown(socket.SHUT_RDWR)
+            self.skt.close()
 
 
     def __recv_batch(self, client_sock,t):
