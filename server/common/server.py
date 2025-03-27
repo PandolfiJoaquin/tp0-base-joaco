@@ -23,8 +23,6 @@ def recv_int_one_byte(client_sock):
 
 def send_results(client_sock, agency_id):
 
-    #receive the agency
-
     #get the results
     winnersForAgency = get_results(agency_id)
     #send the results
