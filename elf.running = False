@@ -1,0 +1,741 @@
+[33mcommit f0b1ad2b9960c36e09e9822fe39bd8d22db2133e[m[33m ([m[1;31morigin/ej7[m[33m, [m[1;32mej7[m[33m)[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Wed Mar 26 21:28:23 2025 -0300
+
+    Fix server closing connection
+
+[33mcommit b1fb94c4015044c562ab7c96a48e4f53fa3db9c5[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 10:24:56 2025 -0300
+
+    Update reame
+
+[33mcommit e5bff173193025ffb856c67138557d87aa9af2bb[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 10:20:06 2025 -0300
+
+    print amt of winners for an agency
+
+[33mcommit ac9baf4e9c97dc5ce83c6149d095d5dc70772f43[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 10:09:33 2025 -0300
+
+    Update gitignore
+
+[33mcommit 7f35e01ca3936378678153864b01b365a8667889[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 10:08:23 2025 -0300
+
+    Remove data from repo
+
+[33mcommit 45017adc08075d40521d0c6ff93346cdd72798ea[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 10:04:04 2025 -0300
+
+    Amount of clients is pass as env_var to server
+
+[33mcommit d83e08b234338a6c79c861a121473ef3d442139b[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 24 09:48:50 2025 -0300
+
+    No se que cambio
+
+[33mcommit 8facaf1ac88556c00256d96a84fac2e8a12c2821[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 23:58:52 2025 -0300
+
+    Fix protocol
+
+[33mcommit e15c21f9fa5f87a9820973fedc3bb0acf4022f41[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 23:26:47 2025 -0300
+
+    Solved issues with multiple clients
+
+[33mcommit 5223273803ce48a9d12069c805f2b5a05c0d8696[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 19:41:20 2025 -0300
+
+    funciona para un cliente. para 2 hay algun temita de timeout
+
+[33mcommit 35cff19f2829e2d25e580a69ce75f432ee53d456[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 17:13:48 2025 -0300
+
+    Primera version logica server responde a request
+
+[33mcommit 3268e6f3913e7e9aeca822037a07b6a3c81abf7f[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 17:13:42 2025 -0300
+
+    Primera version logica server responde a request
+
+[33mcommit e38452e1fd7483272c2c2ef850c6f61b27dbae80[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 16:28:36 2025 -0300
+
+    refactor with previously extracted method
+
+[33mcommit fdd1a9af42d5803bd2b8eaf820d856093a5632e4[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 16:20:00 2025 -0300
+
+    extract sendAll function
+
+[33mcommit 081311f3c8eaca309bee0e2d6920a476b1f15e88[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 16:11:59 2025 -0300
+
+    Clients close connection after receiving ack
+
+[33mcommit 0a380f6fad0ffa432be37fe660c80943d79f684c[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 15:58:31 2025 -0300
+
+    response from ack from server received successfully from clients
+
+[33mcommit 2b06faab98db2c8c44052cd3e1ac638a28aee8e0[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 15:42:46 2025 -0300
+
+    Clients notify server when they are done sending batches
+
+[33mcommit 1ed83fb779c4912daa1f22e8e7c45ac0837121b0[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:31:56 2025 -0300
+
+    Updated compose
+
+[33mcommit b2149cb41ed3c172556d61e9f9404e6a3b07a265[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:30:23 2025 -0300
+
+    Update script
+
+[33mcommit 6d40a6cb65a480519a09db40f4355543de94f940[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:27:46 2025 -0300
+
+    Updated compose
+
+[33mcommit ba153b9fef16d9675119852d46f3a764a28886f8[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:26:41 2025 -0300
+
+    Fix generator script
+
+[33mcommit f25d092316cfdb4bc50d81156cc847af35c8069a[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:24:18 2025 -0300
+
+    Remove some logs
+
+[33mcommit 6e27e2507c2268a36f7fe16df1f2cbfde771aa48[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:19:55 2025 -0300
+
+    Try with higher bytes limit per batch
+
+[33mcommit 0b77817fb5d65ff9ed00536970a2127a76632be4[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 11:15:34 2025 -0300
+
+    Remove conflicting log
+
+[33mcommit fd7637d3ff1d4186c8ae087ea4edfee088859beb[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 10:42:55 2025 -0300
+
+    Update script and max bets per batch received from env_var
+
+[33mcommit b1915325171538abd934b6cb8210f41f80a2a5fe[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 10:16:57 2025 -0300
+
+    cambio compose
+
+[33mcommit b0ca3b637142f6409f9401ce30cd7b17bf2266fe[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 09:52:53 2025 -0300
+
+    Batch send successfully without surpassing the byte nor bets per-batch limit
+
+[33mcommit 6151a018876607dbf46a1e886c8ce0b8cdee3d37[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 23 00:22:39 2025 -0300
+
+    Bug en batches al terminar la conexion. hay que revisar
+
+[33mcommit 11bc4dd1774e8e277728be3e91fcd70d5c997d76[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 23:50:33 2025 -0300
+
+    Fix batch reading
+
+[33mcommit 39832e300b10dbd4dabcebd24eb143b041cf5e71[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 22:31:51 2025 -0300
+
+    Read csv from file
+
+[33mcommit 477eb8c1f338c676be83132f9b58918e6f4b9ef0[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 15:02:07 2025 -0300
+
+    update readme
+
+[33mcommit 5937215f4d17aee8329e4868c47c3a13055ad0ce[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 12:45:06 2025 -0300
+
+    Fix compose
+
+[33mcommit dded903a13d55fa6cf33b65d2b983811de9df3a7[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 12:35:48 2025 -0300
+
+    Fix docker compose
+
+[33mcommit 9e1b500701730e722a8177e14c3267f64517d519[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 12:29:08 2025 -0300
+
+    bet config on env vars
+
+[33mcommit d57ea214c266a2bd349832d67d7a318d914c1190[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 11:57:52 2025 -0300
+
+    Change types to strings
+
+[33mcommit e4a2e191c643475048b9e6f879e2dcd9283ff7c0[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 11:37:44 2025 -0300
+
+    logs
+
+[33mcommit 4df0c0ab5c315578e8aedc67f2848e2ce5eac751[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 22 11:17:54 2025 -0300
+
+    short writes y reads resueltos. Uso funcion store bets
+
+[33mcommit cb83c6b080d9a464607fb65559a561104a15a9af[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Thu Mar 20 18:23:09 2025 -0300
+
+    Fix protocol
+
+[33mcommit ad817bda593709ce773c317e0015a37b97a4604e[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Thu Mar 20 17:16:22 2025 -0300
+
+    First functional protocol version
+
+[33mcommit 4ff5e08b2f806b3ab43b4040790a518dacbd3a77[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Mon Mar 17 17:53:27 2025 -0300
+
+    Takes information about the bet being informed to the server on the new env vars and sends that information to the server
+
+[33mcommit 8bda403467ebdaa6fff2c6526619da5dbd64bdc7[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 20:05:02 2025 -0300
+
+    Revert "Update compose.yml"
+    
+    This reverts commit 8db812bb00a211cda068af73601cc14383346491.
+
+[33mcommit 200d94cb24ed3693b0cb3beb654ef653f68c9e9b[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 20:04:28 2025 -0300
+
+    Caso borde: se interrumpe antes de inicial el loop en el servidor
+
+[33mcommit 8db812bb00a211cda068af73601cc14383346491[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 18:41:44 2025 -0300
+
+    Update compose.yml
+
+[33mcommit 2a74fccd2bf5c6cf51517c6a7ea723c458abd926[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 18:35:49 2025 -0300
+
+    Fix signal handling
+
+[33mcommit d832370e4281189285d99be2eaaff2b03502b34d[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 18:28:39 2025 -0300
+
+    server cierrea gracefully aprovechando la instruccion finally y realizando exit y shutdown en el server
+
+[33mcommit 89b62bdf00ef73c19c57cec507df1186552a2603[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 14:55:59 2025 -0300
+
+    Fix logs
+
+[33mcommit 8abf8f53ed746378ed80b0342a75333cec1283b8[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 14:51:20 2025 -0300
+
+    Fix logs
+
+[33mcommit 1fd8108905b1e8980b9bffde0c33d82b627f79e0[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 13:05:09 2025 -0300
+
+    Fix handleo de señales
+
+[33mcommit addf1233f5b77f7f2f440977ac638c3751dd3cad[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 12:33:04 2025 -0300
+
+    remove log
+
+[33mcommit d6c1122c2fadb758c36e2207562ab4894b892c80[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sun Mar 16 12:31:47 2025 -0300
+
+    SIGTERM handling for client
+
+[33mcommit f55bcce7ef80d1e509eb58e04d75494f70f590b6[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 21:42:29 2025 -0300
+
+    Fix script
+
+[33mcommit 9f60e2676af986bfacb5d9626e445097c78018dd[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 21:41:22 2025 -0300
+
+    Fix script
+
+[33mcommit 6a800100be3f8ad7a330f60eecb9e548827be0c4[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 21:39:06 2025 -0300
+
+    Fix script
+
+[33mcommit c994b66d0f908d93d4c7bc14571f30482fe08530[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 21:37:57 2025 -0300
+
+    Fix script
+
+[33mcommit 0c33982ab902af5f6b31b83c14cc0537b3285786[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 20:59:55 2025 -0300
+
+    Fix script
+
+[33mcommit 87089c8344f030ddc3c2c3ec4365110fb560afbf[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 18:26:12 2025 -0300
+
+    Fix script
+
+[33mcommit 5efef8b8d512d414e7df6b01bbbd3742bf31a447[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 17:59:53 2025 -0300
+
+    fix script
+
+[33mcommit 051b03f5fb74c583c89e6c8d9090fbe05a911821[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 17:50:37 2025 -0300
+
+    [WIP] script para validar server. falta definir host y puerto por argumento
+
+[33mcommit 9ba4d6a2235572a3a9b85c083698049178cb7c3b[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 13:53:38 2025 -0300
+
+    Cambio generador para que no fuerze el nivel de loggeo
+
+[33mcommit c7a9a7a4e747b1c5bf04789189eb29fd702e841f[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 13:50:19 2025 -0300
+
+    Debug level is taken from the config file instead of pass as a docker compose env var
+
+[33mcommit 53aee29237d3bbd1e1cba011b37b7f4fa7cf1d5c[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 13:19:04 2025 -0300
+
+    TEMP: cliente falla si no puede leer configuracion de archivo
+
+[33mcommit 0016be99c08a5afb54ed15593bafc386bd3df20c[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 12:30:28 2025 -0300
+
+    FIX: se deja de pisar la configuracion del server
+
+[33mcommit d4812fba563a35a5e60ef759c56928ff5bb35bec[m
+Merge: 0bd769b 31e7c15
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 12:05:31 2025 -0300
+
+    Merge branch 'ej1' into ej2
+
+[33mcommit 31e7c15156964ef24a6f39c31b36d55c0634b30d[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 11:50:52 2025 -0300
+
+    Cambio script acorde a las modificaciones de compose del ej 2
+
+[33mcommit 0bd769bf0776250fb7ad91cb38b2dfb5bced1449[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 11:48:25 2025 -0300
+
+    Agrego bindmounts para evitar rebuildear la imagen  cada vez que cambia la configuracion
+
+[33mcommit 2472a04e3a7113639114669d96a1047354bd3c02[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Sat Mar 15 09:37:00 2025 -0300
+
+    Delete docker-compose.yml
+
+[33mcommit ec6580407b7d6a175b815b7c9f31f57e96b9d3b1[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Fri Mar 14 20:49:48 2025 -0300
+
+    Add python script to create compose file
+
+[33mcommit 7b5e02dd466d5b145d43e9cde9f70405198146dc[m
+Author: PandolfiJoaquin <jpandolfi@fi.uba.ar>
+Date:   Fri Mar 14 20:10:30 2025 -0300
+
+    Create generar-compose.sh calling a non-existing python script
+
+[33mcommit 4ab29d13bbdfe350d549bd37c8acf2c367581157[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: dfa163a 6b9c750
+Author: Nicolas Zulaica <66538092+n-zu@users.noreply.github.com>
+Date:   Wed Mar 12 18:44:29 2025 -0300
+
+    Merge pull request #37 from 7574-sistemas-distribuidos/n-zu-patch-1
+    
+    Update README.md
+
+[33mcommit 6b9c750ebd29343d8eff4b7b8efce5aaf37999f9[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Wed Mar 12 18:12:30 2025 -0300
+
+    feat: add log clarification to the README
+
+[33mcommit 526a6a87bca2ac61a382e9d45b9e78af25eba2ff[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Sun Mar 9 22:00:58 2025 -0300
+
+    feat: Reformat Makefile targets table
+
+[33mcommit a9492b68d673f8f872ccda8df8ca7b1de35aa691[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Sat Mar 8 15:51:59 2025 -0300
+
+    feat: Update delivery conditions section in README
+
+[33mcommit 14353afff6af01890cae00cf99dcbfc3c1c73313[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Sat Mar 8 15:32:03 2025 -0300
+
+    feat: Update task sections in README
+
+[33mcommit fe3bfd1f19c1c283da172fa6bfe35006edc25ead[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Sat Mar 8 15:14:46 2025 -0300
+
+    feat: Update introduction and use instructions in README
+
+[33mcommit 7ef1f79ef2d413c65047c6b628a6f4a24fc3f2f3[m
+Author: n-zu <nicolaszulaica@gmail.com>
+Date:   Sun Mar 2 15:43:32 2025 -0300
+
+    feat: add input specifications for ej6
+
+[33mcommit 0c6810f72460709a4c41d9bfea378da1632b18b3[m
+Author: Nicolas Zulaica <66538092+n-zu@users.noreply.github.com>
+Date:   Sun Aug 25 19:40:06 2024 -0300
+
+    Update README.md
+
+[33mcommit dfa163a0f85e3b2bceb700903b9478f2042c942e[m
+Merge: e15f42f 9d175e6
+Author: FrancoBar <44034749+FrancoBar@users.noreply.github.com>
+Date:   Thu Aug 22 20:11:51 2024 -0300
+
+    Merge pull request #35 from 7574-sistemas-distribuidos/adapt-practical-task-to-ease-testing
+    
+    Adapt practical task to ease testing
+
+[33mcommit 9d175e69d13d47e79a4665a8d63500790139b34f[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Thu Aug 22 18:33:12 2024 -0300
+
+    fix: typos and informallity in README
+
+[33mcommit 02132d269e185e33989008a45d04da3521c90e4c[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Wed Aug 21 19:54:49 2024 -0300
+
+    feat: name validate echo server script
+
+[33mcommit f325590601fb79a7789c36aaa506f388d5825c45[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Wed Aug 21 19:41:51 2024 -0300
+
+    feat:  update README and config.yaml to ease testing
+
+[33mcommit 5942b605f4e2d54a48bf599e303bbb0f9d7e6321[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Wed Aug 21 19:41:20 2024 -0300
+
+    feat: remove version from docker-compose-dev.yaml to stop the annoying warning
+
+[33mcommit 76889ebde59a92b7441c019da72885ca704b67e8[m
+Author: FrancoBar <fbarreneche@fi.uba.ar>
+Date:   Wed Aug 21 19:09:27 2024 -0300
+
+    feat: unify client and server logging format
+
+[33mcommit e15f42f5b4a61031c27dd1fd55aea75b0a094888[m
+Merge: e44fcf2 f45d951
+Author: FrancoBar <44034749+FrancoBar@users.noreply.github.com>
+Date:   Mon Aug 21 14:17:44 2023 -0300
+
+    Merge pull request #24 from 7574-sistemas-distribuidos/max-package-size-clarification
+    
+    Make max package intention more explicit
+
+[33mcommit f45d951fdae294ec78df6dfd8ccf06f77b806463[m
+Author: FrancoBar <44034749+FrancoBar@users.noreply.github.com>
+Date:   Fri Aug 18 21:44:18 2023 -0300
+
+    Update README.md
+
+[33mcommit e44fcf2d4b4e807c88e2f3ddec8d2ddde76a48fe[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Sat Mar 18 00:18:46 2023 -0300
+
+    feat: add unit tests and fix server utils. improve datasets with bet number
+
+[33mcommit f76db96f931cf88fb6bfcd993840d42d4e611ab6[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Fri Mar 17 19:23:18 2023 -0300
+
+    feat: add store_bets, load_bets and has_won functions
+
+[33mcommit c56d6937f978eb72f58ecfef2f22487ac1a62cdf[m
+Merge: 3c7a85f 7227171
+Author: Pablo D. Roca <pablodroca@gmail.com>
+Date:   Fri Mar 17 02:03:54 2023 -0300
+
+    Merge pull request #21 from 7574-sistemas-distribuidos/proposal_2023_1
+    
+    fix: update log format
+
+[33mcommit 722717173e0cf40d5d08d4dd1a5d6e4a0d6dae0d[m
+Merge: c0a9fbe 3c7a85f
+Author: Pablo D. Roca <pablodroca@gmail.com>
+Date:   Fri Mar 17 02:03:12 2023 -0300
+
+    Merge branch 'master' into proposal_2023_1
+
+[33mcommit c0a9fbe74655b424b9255556d24c117b34e16eab[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Fri Mar 17 01:39:35 2023 -0300
+
+    fix: update logging format
+
+[33mcommit 3c7a85f13713140cb3102057c88a9de6082fefe4[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Thu Mar 16 12:46:43 2023 -0300
+
+    fix: update assignment text
+
+[33mcommit f71a7a43020981119dd8c3293c6f0d15f888398a[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Tue Mar 14 01:44:07 2023 -0300
+
+    feat: new assignment details. update lotto business flow and separate communications from concurrency
+
+[33mcommit 83458e6d8820b6539ffa6f5bb458824e0c265b18[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Thu Mar 16 12:46:43 2023 -0300
+
+    fix: update assignment text
+
+[33mcommit 94523b3dc2c5cbc81acca493422b9f5ea8be6e5f[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Tue Mar 14 01:44:07 2023 -0300
+
+    feat: new assignment details. update lotto business flow and separate communications from concurrency
+
+[33mcommit dea388d38045b623fe0ff8e421156c7a05a0b996[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 01:54:28 2023 -0300
+
+    fix: server config variables defined as upercase and with lower precedence than envvars.
+
+[33mcommit 5e122125d6204e7664b21d34e33b622ab013dcc9[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 01:51:08 2023 -0300
+
+    chore: fix configs to loglevel info in config files but override with debug in envvars
+
+[33mcommit d3dbf842b9d7e1e556956240e1aa3341fdea97a2[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 01:49:43 2023 -0300
+
+    chore: refactor connection logic in client and cleanup log entries
+
+[33mcommit 9105d84300afdf38358bdc8f44f88dba6d9acc10[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 00:54:30 2023 -0300
+
+    chore: add name field to docker compose to avoid automatic naming based in working folder
+
+[33mcommit d996195f3316e46a58fb94f46c07564ff435899f[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 00:53:47 2023 -0300
+
+    chore: update standard to docker compose v2
+
+[33mcommit 64f33ba1c7118d1e9931b6aea05f08e3e0a2f958[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 00:34:53 2023 -0300
+
+    chore: update assignment standards url
+
+[33mcommit 83ae348119efcce3d83d050a162419c90a75d302[m
+Author: Pablo D. Roca <pablo.roca@123seguro.com>
+Date:   Mon Mar 13 00:30:03 2023 -0300
+
+    chore: update assignment content to clarify exercises
+
+[33mcommit 78124a6ca22c9e4cb1fab336c8799999b1d04d6f[m
+Merge: f287a02 2399cc4
+Author: Cristian Raña <cristian.rana8@gmail.com>
+Date:   Thu Aug 25 12:47:30 2022 -0300
+
+    Improvements 2022C2 (#12)
+
+[33mcommit 2399cc46a2bc2d195f87744472f9289c46e5fbbe[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Thu Aug 25 10:41:31 2022 -0300
+
+    Working on PR comments
+
+[33mcommit 3d78339afe1a93c5a9b3b94d35ceddfba951b4fc[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 21:34:19 2022 -0300
+
+    Sleep added
+
+[33mcommit 40338fad643810a717b88de0818c3e5906f63e6a[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:32:05 2022 -0300
+
+    Improvements 2022C2
+
+[33mcommit f287a02a7d8a998a4e74cefad8e4889c76a510e6[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:26:29 2022 -0300
+
+    Revert "New functions added"
+    
+    This reverts commit e6e3d350101dbfb5e1b5a57bfe735a17831b79cb.
+
+[33mcommit 45595591c596dc04b4936a46a82ee76d8111227c[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:25:44 2022 -0300
+
+    Revert "Gitignore updated"
+    
+    This reverts commit 5a017582486cb87d9ab72c969cfb7f4a38a75149.
+
+[33mcommit 700f5e5feb408b1c5378ca4d531852d99da60161[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:25:41 2022 -0300
+
+    Revert "Datasets uploaded"
+    
+    This reverts commit 8ee65cd055f1ba7a26c20f6c3a1734484b531f79.
+
+[33mcommit c95c943bcd5ab6ed64fc42238a2b73a1d3bb342a[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:25:29 2022 -0300
+
+    Revert "README updated"
+    
+    This reverts commit e6e3ef4988e21da4f50ed2cb05890eb4bd82a846.
+
+[33mcommit e6e3ef4988e21da4f50ed2cb05890eb4bd82a846[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:19:44 2022 -0300
+
+    README updated
+
+[33mcommit 8ee65cd055f1ba7a26c20f6c3a1734484b531f79[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:17:03 2022 -0300
+
+    Datasets uploaded
+
+[33mcommit 5a017582486cb87d9ab72c969cfb7f4a38a75149[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 01:16:54 2022 -0300
+
+    Gitignore updated
+
+[33mcommit e6e3d350101dbfb5e1b5a57bfe735a17831b79cb[m
+Author: Cristian Raña <cristian.rana@mheducation.com>
+Date:   Wed Aug 24 00:17:57 2022 -0300
+
+    New functions added
+
+[33mcommit 217fa4a31d6a3b051af9df6de79a7ade48f1ea44[m
+Author: Ezequiel Torres Feyuk <Ezetowers@users.noreply.github.com>
+Date:   Tue Sep 7 19:00:40 2021 -0300
+
+    Improvements 2021 2do cuatrimestre (#5)
+
+[33mcommit 4c65d694cfc44c0a1d927ce502f95302aacbc968[m
+Author: Ezequiel Torres Feyuk <Ezetowers@users.noreply.github.com>
+Date:   Tue Sep 29 17:21:49 2020 -0300
+
+    Fixes in docker-compose-dev (#4)
+    
+    * Do not fix the IP to be received by the services
+    * Fix CIDR of docker-compose subnet
+
+[33mcommit 0d36b9e0e4b0a4ebd38b40f0fb61833abdf89d68[m
+Author: Ezequiel Torres Feyuk <ezequiel.torresfeyuk@gmail.com>
+Date:   Tue Apr 14 18:57:39 2020 -0300
+
+    More README.md changes
+
+[33mcommit 2000a34fc87bfed649dd87627cfd491601b822c5[m
+Author: Pablo D. Roca <pablodroca@gmail.com>
+Date:   Tue Apr 14 09:36:43 2020 -0300
+
+    README.md updated. Fixed some statements. Added some clarifications. (#3)
+
+[33mcommit e0097c59abce03f7b65a75091a016d7d68e7cc9d[m
+Author: Ezequiel Torres Feyuk <ezequiel.torresfeyuk@gmail.com>
+Date:   Sat Apr 11 17:47:40 2020 -0300
+
+    Update README.md
+
+[33mcommit b86882465f37fc1768a414a89462d53e0c7d31d6[m
+Author: Ezequiel Torres Feyuk <ezequiel.torresfeyuk@gmail.com>
+Date:   Fri Mar 6 11:15:08 2020 -0300
+
+    Initial commit
+
+[33mcommit df3be0e9bc678013ec441e34c82189f91838ad06[m
+Author: Ezequiel Torres Feyuk <Ezetowers@users.noreply.github.com>
+Date:   Fri Mar 6 07:46:49 2020 -0300
+
+    Initial commit

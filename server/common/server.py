@@ -127,6 +127,8 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.clients = int(config_params["client_amount"])
+        self.running = False
+        self.skts = []
 
 
 
@@ -138,24 +140,33 @@ class Server:
         communication with a client. After client with communucation
         finishes, servers starts to accept new connections again
         """
-        processes = []
         self.running = True
         with Manager() as manager:
+            processes = []
             file_lock = manager.Lock()
             agencies_done_lock = manager.Lock()
             agencies_done = manager.list()
             while self.running:
-                client_sock = self.__accept_new_connection()
-                # start this in a process
-                processes.append(Process(
-                    target=self.__handle_client_connection,
-                    args=(client_sock, file_lock, agencies_done_lock, agencies_done)
-                ))
-                processes[-1].start()
+                try:
+                    client_sock = self.__accept_new_connection()
+                    # start this in a process
+                    processes.append(Process(
+                        target=self.__handle_client_connection,
+                        args=(client_sock, file_lock, agencies_done_lock, agencies_done)
+                    ))
+                    processes[-1].start()
+                except OSError as e:
+                    logging.error(f"action: accept_connections | result: fail | error: {e}")
                 #add the process to a list
                 for p in processes:
                     if not p.is_alive():
                         p.join()
+
+            for p in processes:
+                if not p.is_alive():
+                    p.join()
+
+
 
     def __handle_client_connection(self, client_sock, file_lock, agencies_done_lock, agencies_done):
         """
@@ -211,10 +222,9 @@ class Server:
 
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
-            
-        finally:
-            client_sock.shutdown(socket.SHUT_WR)
-            client_sock.close()
+
+        client_sock.shutdown(socket.SHUT_WR)
+        client_sock.close()
 
     def __accept_new_connection(self):
         """
@@ -231,11 +241,12 @@ class Server:
         return c
 
     def __sigterm_handler(self, sig, frame):
+        self.running = False
         self._server_socket.shutdown(socket.SHUT_RDWR)
         self._server_socket.close()
-        self.running = False
-        exit(0)
-
-
-
-
+        for skt in self.skts:
+            try:
+                skt.shutdown(socket.SHUT_RDWR)
+                skt.close()
+            except OSError:
+                continue
