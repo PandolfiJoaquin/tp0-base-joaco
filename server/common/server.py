@@ -28,6 +28,7 @@ class Server:
         while self.running:
             try:
                 client_sock = self.__accept_new_connection()
+                self.skt = client_sock
                 self.__handle_client_connection(client_sock)
             except OSError as e:
                 logging.error(f"action: accept_connections | result: fail | error: {e}")
