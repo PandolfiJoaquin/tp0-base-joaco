@@ -2,7 +2,12 @@
 
 ## Ej8
 
-
+El objetivo de este ejercicio era poder procesar en paralelo las solicitudes de los clientes.
+Debido a las limitaciones de multithreading nativo de python, se utilizo la libreria 
+multiprocessing que posee una api similar. Esta libreria permite utilizar mecanismos similares
+a los de threads que pueden actuar como un lock. Se uso uno para proteger la escritura del
+archivo de apuestas y otro para coordinar cuando era que todas las apuestas habian
+sido registradas
 
 
 # TP0: Docker + Comunicaciones + Concurrencia
