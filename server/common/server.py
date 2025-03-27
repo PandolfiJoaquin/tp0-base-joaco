@@ -30,7 +30,8 @@ class Server:
                 self.skt = client_sock
                 self.__handle_client_connection(client_sock)
             except OSError as e:
-                logging.error(f"action: accept_connections | result: fail | error: {e}")
+                if self.running:
+                    logging.error(f"action: accept_connections | result: fail | error: {e}")
 
     def __handle_client_connection(self, client_sock):
         """
@@ -48,6 +49,9 @@ class Server:
             client_sock.send("{}\n".format(msg).encode('utf-8'))
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
+
+        client_sock.shutdown(socket.SHUT_WR)
+        client_sock.close()
 
     def __accept_new_connection(self):
         """
