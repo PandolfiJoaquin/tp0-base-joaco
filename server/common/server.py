@@ -156,7 +156,8 @@ class Server:
                     ))
                     processes[-1].start()
                 except OSError as e:
-                    logging.error(f"action: accept_connections | result: fail | error: {e}")
+                    if self.running:
+                        logging.error(f"action: accept_connections | result: fail | error: {e}")
                 #add the process to a list
                 for p in processes:
                     if not p.is_alive():
@@ -223,8 +224,11 @@ class Server:
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
 
-        client_sock.shutdown(socket.SHUT_WR)
-        client_sock.close()
+        try:
+            client_sock.shutdown(socket.SHUT_WR)
+            client_sock.close()
+        except OSError:
+            logging.debug("socket already closed")
 
     def __accept_new_connection(self):
         """
