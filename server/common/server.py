@@ -35,7 +35,8 @@ class Server:
                 self.skt = client_sock
                 self.__handle_client_connection(client_sock)
             except OSError as e:
-                logging.error(f"action: accept_connections | result: fail | error: {e}")
+                if self.running:
+                    logging.error(f"action: accept_connections | result: fail | error: {e}")
 
     def __handle_client_connection(self, client_sock):
         """
@@ -81,10 +82,11 @@ class Server:
                 else:
                     self.__send_results(client_sock, agency_id)
 
-
-
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
+
+        client_sock.shutdown(socket.SHUT_WR)
+        client_sock.close()
 
 
     def ackear(self, client_sock):
